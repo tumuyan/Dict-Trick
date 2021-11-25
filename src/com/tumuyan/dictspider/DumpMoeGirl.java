@@ -165,9 +165,13 @@ public class DumpMoeGirl {
             return null;
         }
 
+
+
+
         try {
+            Thread.sleep(3000);
             if (i > 0) {
-                Thread.sleep(50000 * i + 2000);
+                Thread.sleep(60000 * i + 2000);
             }
             Connection.Response res = Jsoup.connect(url)
                     .header("Accept", "*/*")

@@ -116,7 +116,7 @@ public class WikiCClean {
                 if (s.matches(".{3,100}人物$"))
                     continue;
 
-                if (s.matches(".*[0-9](年|公路|大厦|弄|馆|條站|快线|手槍|条站|手枪|步枪)"))
+                if (s.matches(".*[0-9](年|公路|大厦|弄|馆|條站|快线|手槍|条站|手枪|步枪|洞)"))
                     continue;
 
 //                匹配 xxx3季 北京国安足球俱乐部1997赛季  类似词条
@@ -425,7 +425,7 @@ public class WikiCClean {
 
         if (input_files.size() < 1) {
             if (debug) {
-                path = "A:\\ProjectPython\\zhwiki-20211001-all-titles-in-ns0";
+                path = "A:\\ProjectPython\\zhwiki-20211120-all-titles-in-ns0";
                 //   path = "A:\\ProjectPython\\wiki.test.char.txt";
 //                path = "A:\\ProjectPython\\wikitest.2.txt";
 //                path = "A:\\ProjectPython\\moegirl.txt";
@@ -465,8 +465,6 @@ public class WikiCClean {
                 chs.removeAll(ReadWords());
                 WriteList(chs, path_w + ".cn.dict.txt", auto_delete, false);
             }
-
-
 
             WriteList(dict.getEng(), path_w + ".eng.dict.txt", auto_delete, false);
             WriteList(dict.getMix(), path_w + ".mix.dict.txt", auto_delete, false);
