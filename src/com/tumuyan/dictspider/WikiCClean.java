@@ -60,14 +60,22 @@ public class WikiCClean {
         }
 
         public void add(String str) {
+
 //            不可切分的字符有：[-・·&%']
 //            必须切分的字符有： ~ _(空格) 括号
-
             str = regular(str);
 
-            String[] strs = str.split("[ |｜!\"#$)*+(_\\.,:;\\\\\\^`~=?@/×÷\u2016-\u206f\u3000-\u303f\\s、\uD83D\uDE00—\ud8f6\udc4f ｟-｣]");
+            String[] strs;
+            if (str.matches(".*([\u4e00-\u9fff])[·・ᐧ･]([\u4e00-\u9fff]).*")) {
+                strs = str.replaceAll("[·・ᐧ･]", "·")
+                        .split("[ |｜!\"#$)*+(_— ｟-｣\\.,:;\\\\\\^`~=?@/×÷\u2016-\u206f\u3000-\u303f\\s、\uD83D\uDE00-\uD83E\uDFFF]");
+            } else
+                strs = str
+                        .split("[ |｜!\"#$)*+(_— ｟-｣\\.,:;\\\\\\^`~=?@/×÷\u2016-\u206f\u3000-\u303f\\s、\uD83D\uDE00-\uD83E\uDFFF]");
 
             for (int i = 0; i < strs.length; i++) {
+
+//              去除词条首末的编号、符号、序数等
                 String s = strs[i]
                         .replaceFirst("(?<![a-zA-Z])[Ⅰ-ⅻIVX&-]{2,8}$", "")
                         .replaceFirst("[①-⒛Ⅰ-ⅻ]+$", "")
@@ -95,8 +103,8 @@ public class WikiCClean {
                 if (s.matches(".{0,2}[³²□-].{0,2}"))
                     continue;
 
-//             剔除低质量  在glog中匹配 ^.·.\s   手动维护 简·爱 等少部分，
-                if (s.matches(".·."))
+//             剔除低质量  在glog中匹配 ^.[・·].\s   手动维护 简·爱 等少部分，
+                if (s.matches(".[・·]."))
                     continue;
 
 //                过滤其他语言
@@ -161,6 +169,7 @@ public class WikiCClean {
                 }
 
                 // 匹配萌娘百科的成句格式, 如果只有开头有OO，直接剔除
+                // 举例： ○二代
                 if (s.matches("○[^a-zA-Z][^Oo○]*")) {
                     String ss = s.substring(1);
                     if (ss.length() > 1)
@@ -175,7 +184,7 @@ public class WikiCClean {
                         continue;
                 }
 
-                if (s.matches("[0-z\\-·・&%'À-\u2DFF]+")) {
+                if (s.matches("[0-z\\-・·&%'À-\u2DFF]+")) {
                     eng.add(s);
                     continue;
                 } else if (c >= 'A' && c <= 'z') {
@@ -185,7 +194,7 @@ public class WikiCClean {
                     if (i > 0) {
 
                         if (strs[i - 1].matches("[A-z]+")) {
-                            String ss = s.replaceFirst("^[A-z·・]+", "");
+                            String ss = s.replaceFirst("^[A-z・·]+", "");
                             if (ss.length() < 2)
                                 mix.add(s);
                             else
@@ -203,6 +212,7 @@ public class WikiCClean {
                 if (s.matches(".*[^0-9a-zA-Z]+[0-9a-zA-Z-]+")) {
                     chn.add(s);
                 } else {
+
                     if (s.matches(".+-.+")) {
 //                    处理 哈利·波特 哈利—波特 重复出现   to do
                     }
@@ -356,7 +366,7 @@ public class WikiCClean {
                     //全角空格为12288，半角空格为32
                     c[i] = (char) 32;
                     continue;
-                } else if (c[i] >= 0x2010 && c[i] <= 0x2015 || c[i]=='─') {
+                } else if (c[i] >= 0x2010 && c[i] <= 0x2015 || c[i] == '─') {
                     // 多个编码的'-'进行统一转换
                     c[i] = '-';
                 } else if (c[i] == ',' || c[i] == '，') {
@@ -370,6 +380,7 @@ public class WikiCClean {
                     c[i] = '_';
                 }
             }
+
             return new String(c).replaceAll("([\u4e00-\u9fff])([a-zA-Z-]+[_\\s])", "$1_$2")
                     .replaceAll("([_\\s][a-zA-Z-]+)([\u4e00-\u9fff])", "$1_$2");
         }
@@ -425,7 +436,7 @@ public class WikiCClean {
 
         if (input_files.size() < 1) {
             if (debug) {
-                path = "A:\\ProjectPython\\zhwiki-20211120-all-titles-in-ns0";
+                path = "A:\\ProjectPython\\zhwiki-20211220-all-titles-in-ns0";
                 //   path = "A:\\ProjectPython\\wiki.test.char.txt";
 //                path = "A:\\ProjectPython\\wikitest.2.txt";
 //                path = "A:\\ProjectPython\\moegirl.txt";
@@ -445,23 +456,23 @@ public class WikiCClean {
             }
         }
 
-        OutputWords( dict, path_w, auto_delete,true);
+        OutputWords(dict, path_w, auto_delete, true);
     }
 
 
-    public static void OutputWords(Dict dict,String path_w,boolean auto_delete,boolean t2s){
+    public static void OutputWords(Dict dict, String path_w, boolean auto_delete, boolean t2s) {
         try {
             Set<String> chs = dict.getChs();
 
-            if(t2s){
+            if (t2s) {
                 WriteList(chs, path_w + ".cn.dict.txt", auto_delete, false);
 
-                OpenCC_T2S(path_w + ".cn.dict.txt",path_w + ".chs.dict.txt","A:\\EBookTools\\OpenCC\\bin");
+                OpenCC_T2S(path_w + ".cn.dict.txt", path_w + ".chs.dict.txt", "A:\\EBookTools\\OpenCC\\bin");
                 chs = ReadWords(path_w + ".chs.dict.txt");
                 chs.removeAll(ReadWords());
                 WriteList(chs, path_w + ".chs2.dict.txt", auto_delete, false);
 
-            }else{
+            } else {
                 chs.removeAll(ReadWords());
                 WriteList(chs, path_w + ".cn.dict.txt", auto_delete, false);
             }
@@ -477,8 +488,7 @@ public class WikiCClean {
     }
 
 
-
-    public static Set<String> ReadWords(){
+    public static Set<String> ReadWords() {
         Set<String> words = new HashSet<>();
 
         words.addAll(ReadWords("A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词.txt"));
@@ -575,9 +585,9 @@ public class WikiCClean {
 
 
     public static void OpenCC_T2S(String input, String output, String opencc) {
-        String command = (opencc + File.separator  + "opencc -i " + input + " -o " + output + " -c " + opencc+File.separator+ "t2s.json");
+        String command = (opencc + File.separator + "opencc -i " + input + " -o " + output + " -c " + opencc + File.separator + "t2s.json");
 
-        System.out.println("exec OpenCC\nCommand = "+command);
+        System.out.println("exec OpenCC\nCommand = " + command);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
