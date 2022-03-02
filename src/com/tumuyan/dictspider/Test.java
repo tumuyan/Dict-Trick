@@ -13,7 +13,7 @@ tyuiopasdfghjklzxcvbnm1234567890
     }
 
     public static  void testAddDict() {
-        WikiCClean.Dict dict = new WikiCClean.Dict();
+        Dict dict = new Dict();
         dict.add("佐贺偶像是传奇LIVE~Fran Chou Chou大家一起喊出来~");
         dict.add("佐贺偶像是传奇LIVE~Fran Chou Chou大家一起欢呼~");
     }

@@ -8,10 +8,9 @@ import org.jsoup.Jsoup;
 
 import java.io.*;
 
-import com.tumuyan.dictspider.WikiCClean.Dict;
 
-import static com.tumuyan.dictspider.WikiCClean.OutputWords;
-import static com.tumuyan.dictspider.WikiCClean.WriteList;
+import static com.tumuyan.dictspider.Clean.OutputWords;
+import static com.tumuyan.dictspider.Utils.Write;
 
 // 从萌娘百科dump词库并预处理
 //
@@ -33,43 +32,19 @@ use_preset_vocabulary: false
 */
 
 public class DumpMoeGirl {
-    private static boolean debug = true;
 
     public static void main(String[] args) {
+//        System.out.println("args.length=" + args.length + ", class=" + Clean.class.getSimpleName());
+//        for (String s : args) {
+//            System.out.println("  args:" + s);
+//        }
 
-        String path_w = "";
-        boolean auto_delete = false;
+        Config config = new Config();
+        config.setDefault_path_w("moegirl.txt");
+        config.Parse(args);
 
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] == "-h") {
-                System.out.println("help\n");
-            } else if (args[i] == "-a") {
-                auto_delete = true;
-            }
-            if (args[i] == "-o") {
-                i++;
-                if (args.length > i) {
-
-                    path_w = args[i].trim().replaceFirst("[/\\\\]$", "");
-                    File file = new File(path_w).getParentFile();
-//                    File file=new File(path_w.replaceFirst("[^/\\\\]+$",""));
-                    if (file.exists()) {
-                        System.out.println("Output to: " + args[i]);
-                    } else {
-                        path_w = "";
-                        System.out.println("[Err]Output folder not exist: " + file.getPath());
-                    }
-
-                } else {
-                    System.out.println("[Err]Output arg not exist.");
-                }
-            }
-        }
-
-        if (debug) {
-            if (path_w == "")
-                path_w = "A:\\ProjectPython\\moegirl.";
-            ;
+        if (!config.verifyOutputPath()) {
+            return;
         }
 
         Dict dict = new Dict();
@@ -78,8 +53,9 @@ public class DumpMoeGirl {
 
         String next = null;
 
-        while (true) {
-
+        int page = 0;
+        while (page < config.getPageLimit()) {
+            page++;
             JSONObject json = query_wiki("", next, 0);
 
             if (json == null)
@@ -99,19 +75,14 @@ public class DumpMoeGirl {
                         dict.add(title);
                     }
 
-/*                Iterator it = obj.keys();
-                while(it.hasNext()){
-                    String key = (String) it.next();
-                    array = obj.getJSONArray(key);
-                }*/
                 } else {
                     System.out.println("Err: query no result; next=" + next);
                 }
 
-                if(json.has("continue")){
+                if (json.has("continue")) {
                     obj = json.getJSONObject("continue");
                     next = obj.getString("apcontinue");
-                }else {
+                } else {
                     System.out.println("Done: accontinue not exit; next=" + next);
                     break;
                 }
@@ -123,33 +94,12 @@ public class DumpMoeGirl {
         }
 
         try {
-            Write(path_w+"txt",buffer , auto_delete);
-//            WriteList(dict.getChs(), path_w + ".chs.dict.yaml", auto_delete, false);
-//            WriteList(dict.getEng(), path_w + ".eng.dict.yaml", auto_delete, false);
-//            WriteList(dict.getMix(), path_w + ".mix.dict.yaml", auto_delete, false);
-//            WriteList(dict.getSuffix(), path_w + ".chs.suffix.yaml", auto_delete, false);
+            Write(config.getPath_w() + "txt", buffer, config.isAuto_delete());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        OutputWords( dict, path_w, auto_delete,true);
-    }
-
-
-
-    public static boolean Write(String path, StringBuffer content,boolean auto_delete) throws Exception {
-
-        File file = new File(path);
-        if(file.exists() && auto_delete){
-            if(file.isFile())
-                file.delete();
-        }
-
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write('\n');
-        fileOutputStream.write(content.toString().getBytes());
-        fileOutputStream.close();
-        return true;
+        OutputWords(dict, config.getPath_w(), config.isAuto_delete(), true);
     }
 
 
@@ -164,9 +114,6 @@ public class DumpMoeGirl {
         if (i > 3) {
             return null;
         }
-
-
-
 
         try {
             Thread.sleep(3000);
@@ -189,11 +136,10 @@ public class DumpMoeGirl {
             return json;
 
         } catch (Exception e) {
-            System.out.print("Error: s=" + s);
+            System.out.println("Error: s=" + s + ", url=" + url);
             e.printStackTrace();
             return query_wiki(site, s, i + 1);
         }
-
     }
 
 

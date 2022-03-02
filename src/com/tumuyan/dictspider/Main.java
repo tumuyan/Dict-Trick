@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.tumuyan.dictspider.Utils.WriteFile;
+
 // 用于读取两分词库每一行的第一个字，并从在线字典获取拼音，转写为大字集拼音。
 // 已经为多音字添加&，需要用正则转换 \t([^\s]+\&[^\s]+) 替换为 \t\[$1\]
 public class Main {
@@ -183,20 +185,7 @@ public class Main {
     }
 
 
-    public static boolean WriteFile(String path, StringBuffer content) throws Exception {
 
-        File file = new File(path);
-
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write('\n');
-        fileOutputStream.write(content.toString().getBytes());
-        fileOutputStream.close();
-        return true;
-    }
-
-    public static synchronized void write(FileOutputStream fileOutputStream, String content) throws Exception {
-        fileOutputStream.write(content.getBytes());
-    }
 
 
     public static void process(ArrayList<String> keys, String path) throws Exception {
@@ -213,7 +202,7 @@ public class Main {
                 try {
 //                    String str = query_zdict(s, 0);
                     String str = query_gxds(s,0);
-                    write(fileOutputStream, str);
+                    Utils.write(fileOutputStream, str);
                     counter.getAndIncrement();
                     System.out.println(Thread.currentThread().getName() + " " + counter + "/" + keys.size() + "  " + str);
                 } catch (Exception e) {
@@ -227,7 +216,7 @@ public class Main {
         System.out.println("all thread complete");
     }
 
-
+// 从zdict查询读音
     public static String query_zdict(String s, int i) throws Exception {
         String string = "\n" + s + "\t";
         if (i > 3) {
@@ -255,7 +244,7 @@ public class Main {
 
     }
 
-
+// 从国学大师网查询读音
     public static String query_gxds(String s, int i) throws Exception {
 //        String url = "http://www.guoxuedashi.net/zidian/z42675l.html"
         char c = s.charAt(0);
