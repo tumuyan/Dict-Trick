@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Clean">
+    <output-path>$PROJECT_DIR$/out/artifacts/Clean</output-path>
+    <root id="archive" name="Clean.jar">
+      <element id="module-output" name="dic_spider" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20210307.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jsoup-1.13.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

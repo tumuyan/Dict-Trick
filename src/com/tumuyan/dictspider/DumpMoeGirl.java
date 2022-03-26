@@ -6,8 +6,8 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
-import java.io.*;
-
+import java.util.Arrays;
+import java.util.List;
 
 import static com.tumuyan.dictspider.Clean.OutputWords;
 import static com.tumuyan.dictspider.Utils.Write;
@@ -34,13 +34,26 @@ use_preset_vocabulary: false
 public class DumpMoeGirl {
 
     public static void main(String[] args) {
+
 //        System.out.println("args.length=" + args.length + ", class=" + Clean.class.getSimpleName());
 //        for (String s : args) {
 //            System.out.println("  args:" + s);
 //        }
 
-        Config config = new Config();
+
+        String config_file = null;
+        List<String> arg_list = Arrays.asList(args);
+        int index = arg_list.indexOf("-c");
+        if (index < 0)
+            index = arg_list.indexOf("-config");
+
+        if (index >= 0 && index < args.length - 1) {
+            config_file = args[index + 1];
+        }
+        Config config = Utils.ReadConfig(config_file);
+
         config.setDefault_path_w("moegirl.txt");
+
         config.Parse(args);
 
         if (!config.verifyOutputPath()) {
@@ -56,7 +69,7 @@ public class DumpMoeGirl {
         int page = 0;
         while (page < config.getPageLimit()) {
             page++;
-            JSONObject json = query_wiki("", next, 0);
+            JSONObject json = query_wiki(next, 0);
 
             if (json == null)
                 System.out.println("Err: json=null next=" + next);
@@ -93,19 +106,22 @@ public class DumpMoeGirl {
 
         }
 
+
+        System.out.println("Dump finish, " + page);
+
         try {
             Write(config.getPath_w() + "txt", buffer, config.isAuto_delete());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        OutputWords(dict, config.getPath_w(), config.isAuto_delete(), true);
+        OutputWords(dict, config);
     }
 
 
-    public static JSONObject query_wiki(String site, String s, int i) {
+    public static JSONObject query_wiki(String s, int i) {
 
-        site = "https://mzh.moegirl.org.cn";
+        String site = "https://mzh.moegirl.org.cn";
         String url = site + "/api.php?action=query&list=allpages&format=json&aplimit=500";
 
         if (s != null)
@@ -132,13 +148,13 @@ public class DumpMoeGirl {
             JSONObject json = new JSONObject(body);
 
             if (json.isEmpty())
-                return query_wiki(site, s, i + 1);
+                return query_wiki(s, i + 1);
             return json;
 
         } catch (Exception e) {
             System.out.println("Error: s=" + s + ", url=" + url);
             e.printStackTrace();
-            return query_wiki(site, s, i + 1);
+            return query_wiki(s, i + 1);
         }
     }
 

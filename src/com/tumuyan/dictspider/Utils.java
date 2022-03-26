@@ -1,10 +1,67 @@
 package com.tumuyan.dictspider;
 
 import java.io.*;
+import java.sql.Time;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Utils {
+
+    // 从文本文件读取配置
+    public static Config ReadConfig(String path) {
+        Config config = new Config();
+        config.setDefault_opencc_path("A:\\EBookTools\\OpenCC\\bin");
+        config.setDefault_opencc_config("t2s.json");
+
+        config.setDefault_blacklist((
+                "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词.txt;" +
+                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路.txt;" +
+                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路2.txt"
+        ).split(";"));
+
+        config.setDefault_blacklist_fix(new String[]{"A:\\ProjectOthers\\rime-pinyin-simp\\others\\修复-村县镇乡路村縣鎮鄉路.txt"});
+
+        config.setDefault_blacklist_regex(
+                new String[]{
+                        ".*新干线.+",
+                        ".+路$",
+                        ".+村$",
+                        ".+县$",
+                        ".+乡$",
+                        ".+镇$",
+                        ".+街道$",
+                        "^.{1,3}街$"
+                }
+        );
+
+        if (path == null)
+            return config;
+        StringBuffer buffer = new StringBuffer();
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(path);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            String line = null;
+
+            while ((line = bufferedReader.readLine()) != null) {
+//              如果匹配到空行
+                line = line.trim();
+                if (line.length() < 1 || line.startsWith("#"))
+                    continue;
+                buffer.append(line);
+                buffer.append('\n');
+
+            }
+            fileInputStream.close();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        config.Parse(buffer.toString().split("\n"));
+        return config;
+    }
 
     // 把文本文件读取为HashSet<String>，每行符合长度的文本为一个元素
     public static Set<String> ReadWords(String path, int wordLengthMin) {
@@ -44,7 +101,7 @@ public class Utils {
             if (file.exists()) {
                 if (auto_delete) {
                     file.delete();
-                    System.out.println("[Done]Delete " + file.getPath());
+//                    System.out.println("[Done]Delete " + file.getPath());
                 }
             }
         }
@@ -64,7 +121,7 @@ public class Utils {
             }
         }
         fileOutputStream.close();
-        System.out.println("[Done] size=" + counter + " \t" + path);
+        System.out.println(new Date().toString() + " [Done] size=" + counter + " \t" + path);
     }
 
 
@@ -99,16 +156,11 @@ public class Utils {
         fileOutputStream.write(content.getBytes());
     }
 
-// 调用OpenCC完成文件简繁转换
-
-    public static void OpenCC_T2S(String inputPath, String outputPath, String openccPath) {
-        OpenCC(inputPath, outputPath, openccPath, "t2s.json");
-    }
-
+    // 调用OpenCC完成文件简繁转换
     public static void OpenCC(String inputPath, String outputPath, String openccPath, String openccConfig) {
-        String command = (openccPath + File.separator + "opencc -i " + inputPath + " -o " + outputPath + " -c " + openccPath + File.separator + "t2s.json");
+        String command = (openccPath + File.separator + "opencc -i " + inputPath + " -o " + outputPath + " -c " + openccPath + File.separator + openccConfig);
 
-        System.out.println("exec OpenCC\nCommand = " + command);
+        System.out.println(new Date().toString() + " exec OpenCC, Command = " + command);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
@@ -122,13 +174,13 @@ public class Utils {
 
             process.waitFor();
             if (process.exitValue() != 0) {
-                System.out.println("error!");
+                System.out.println(new Date().toString() + " exec OpenCC error!");
             }
 
             bis.close();
             br.close();
 
-            System.out.println("finish OpenCC");
+            System.out.println(new Date().toString() + " exec OpenCC finish");
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
