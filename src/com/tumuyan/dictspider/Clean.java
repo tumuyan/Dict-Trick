@@ -84,6 +84,11 @@ public class Clean {
 
                 OpenCC(path_w + ".cn.dict.txt", path_w + ".chs.dict.txt", opencc_path, opencc_config);
                 chs = Utils.ReadWords(path_w + ".chs.dict.txt");
+
+                if (config.isLess_output()) {
+                    File file = new File(path_w + ".cn.dict.txt");
+                    file.delete();
+                }
             }
 
             if (config.verifyBlacklist()) {
@@ -92,9 +97,12 @@ public class Clean {
             }
 
             WriteList(chs, path_w + ".dict.txt", auto_delete, false);
-            WriteList(dict.getEng(), path_w + ".eng.dict.txt", auto_delete, false);
-            WriteList(dict.getMix(), path_w + ".mix.dict.txt", auto_delete, false);
-            WriteList(dict.getSuffix(), path_w + ".chs.suffix.txt", auto_delete, false);
+            if (!config.isLess_output()) {
+                WriteList(dict.getEng(), path_w + ".eng.dict.txt", auto_delete, false);
+                WriteList(dict.getMix(), path_w + ".mix.dict.txt", auto_delete, false);
+                WriteList(dict.getSuffix(), path_w + ".chs.suffix.txt", auto_delete, false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

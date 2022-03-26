@@ -24,6 +24,7 @@ public class Config {
     private List<String> blacklist = new ArrayList<>(); // 废词
     private List<String> blacklist_fix = new ArrayList<>(); // 修复过杀废词
     private List<String> blacklist_regex = new ArrayList<>(); // 废词正则表达式
+    private boolean less_output; //输出更少的文件
 
     public void setDefault_opencc_config(String default_opencc_config) {
         this.default_opencc_config = default_opencc_config;
@@ -90,15 +91,19 @@ public class Config {
         return auto_delete;
     }
 
+    public boolean isLess_output() {
+        return less_output;
+    }
+
     public Config() {
 
     }
 
     public static String[] short_name = new String[]{
-            "h", "a", "d", "o", "p", "i", "cc", "ccc", "b", "bf", "bs"
+         "l",   "h", "a", "d", "o", "p", "i", "cc", "ccc", "b", "bf", "bs"
     };
     public static List<String> full_name = Arrays.asList(
-            "help", "a", "debug", "output", "pagelimit", "input", "opencc", "opencc-config", "blacklist", "blacklist-fix", "blackstring"
+         "less-output",   "help", "a", "debug", "output", "pagelimit", "input", "opencc", "opencc-config", "blacklist", "blacklist-fix", "blackstring"
     );
 
 
@@ -113,6 +118,8 @@ public class Config {
                 auto_delete = true;
             } else if (arg.equals("-d") || arg.equals("-debug")) {
                 debug = true;
+            } else if (arg.equals("-l") || arg.equals("-less-output")) {
+                less_output = true;
             } else if (arg.equals("-o") || arg.equals("-output")) {
                 i++;
                 if (args.length > i) {
