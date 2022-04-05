@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Utils {
@@ -139,6 +140,25 @@ public class Utils {
         fileOutputStream.write(content.toString().getBytes());
         fileOutputStream.close();
         return true;
+    }
+
+
+    public static void Write(String path, List<UserDict> list, boolean append_file) {
+        try {
+            File file = new File(path);
+            FileOutputStream fileOutputStream = new FileOutputStream(file, append_file);
+
+            for (UserDict item : list) {
+                fileOutputStream.write(item.full.getBytes());
+                fileOutputStream.write('\n');
+            }
+            fileOutputStream.close();
+
+            System.out.println(new Date().toString() + " [Done] size=" + list.size() + " \t" + path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static boolean WriteFile(String path, StringBuffer content) throws Exception {

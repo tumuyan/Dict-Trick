@@ -18,13 +18,19 @@ public class Config {
     private boolean debug = false; // debug自用，无需填入参数，使用默认路径
     private Integer pageLimit = Integer.MAX_VALUE; //  debug使用，限制爬虫爬的页面数量
     private List<String> input_files = new ArrayList<>(); // 输入文件的列表
+    private List<String> refer_files = new ArrayList<>(); // 参考文件的列表
     private String opencc_path = "";  // opencc可执行文件所在的路径（不含文件名）
     private String opencc_config = ""; // opencc的配置文件所在的路径，是opencc_path的相对路径
 
     private List<String> blacklist = new ArrayList<>(); // 废词
     private List<String> blacklist_fix = new ArrayList<>(); // 修复过杀废词
     private List<String> blacklist_regex = new ArrayList<>(); // 废词正则表达式
+    private List<Integer> count_group = new ArrayList<>(); // 用户词条c值分组阈值
     private boolean less_output; //输出更少的文件
+
+    public List<Integer> getCount_group() {
+        return count_group;
+    }
 
     public void setDefault_opencc_config(String default_opencc_config) {
         this.default_opencc_config = default_opencc_config;
@@ -79,6 +85,10 @@ public class Config {
         return input_files;
     }
 
+    public List<String> getRefer_files() {
+        return refer_files;
+    }
+
     public Integer getPageLimit() {
         return pageLimit;
     }
@@ -100,10 +110,10 @@ public class Config {
     }
 
     public static String[] short_name = new String[]{
-         "l",   "h", "a", "d", "o", "p", "i", "cc", "ccc", "b", "bf", "bs"
+            "l", "h", "a", "d", "o", "p", "i", "cc", "ccc", "b", "bf", "bs"
     };
     public static List<String> full_name = Arrays.asList(
-         "less-output",   "help", "a", "debug", "output", "pagelimit", "input", "opencc", "opencc-config", "blacklist", "blacklist-fix", "blackstring"
+            "less-output", "help", "a", "debug", "output", "pagelimit", "input", "opencc", "opencc-config", "blacklist", "blacklist-fix", "blackstring"
     );
 
 
@@ -123,14 +133,19 @@ public class Config {
             } else if (arg.equals("-o") || arg.equals("-output")) {
                 i++;
                 if (args.length > i) {
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        continue;
+                    }
 
-                    path_w = args[i].trim().replaceFirst("(\\.[^./\\\\]+)?[/\\\\]?$", ".");
+                    path_w = arg.replaceFirst("(\\.[^./\\\\]+)?[/\\\\]?$", ".");
                     File file = new File(path_w).getParentFile();
-//                    File file=new File(path_w.replaceFirst("[^/\\\\]+$",""));
+
                     if (file == null) {
 //                        File f = new File(new File(System.getProperty("user.dir")),path_w);
 //                        File f = new File(DumpMoeGirl.class.getClassLoader().getResource("").getFile());
-                        File f = new File(DumpMoeGirl.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+                        File f = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
                         f = new File(f.getParentFile(), path_w);
 
                         file = f.getParentFile();
@@ -150,7 +165,13 @@ public class Config {
             } else if (arg.equals("-p") || arg.equals("-pagelimit")) {
                 i++;
                 if (args.length > i) {
-                    pageLimit = Integer.parseInt(args[i]);
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        continue;
+                    }
+
+                    pageLimit = Integer.parseInt(arg);
                     if (pageLimit == null) {
                         pageLimit = Integer.MAX_VALUE;
                         System.out.println("[Err]unexpected pageLimit arg and disable pageLimit: " + args[i]);
@@ -158,15 +179,39 @@ public class Config {
                 } else {
                     System.out.println("[Err]pageLimit arg not exist.");
                 }
+            } else if (arg.equals("-cg") || arg.equals("-count-group")) {
+                i++;
+                if (args.length > i) {
+                    arg = args[i];
+                    if (arg.matches("[:0-9]+")) {
+                        String[] counts = arg.split(":");
+                        Integer u = Integer.MIN_VALUE;
+                        for(String c:counts){
+                            Integer v = Integer.parseInt(c);
+                            if(v!=null){
+                                if(v>u){
+                                    u=v;
+                                    count_group.add(v);
+                                }
+                            }
+                        }
+                    }else{
+                        i--;
+                        System.out.println("[Err]unexpected count-group arg: " + arg);
+                    }
+                } else {
+                    System.out.println("[Err]count-group arg not exist.");
+                }
             } else if (arg.equals("-i") || arg.equals("-input")) {
                 i++;
                 boolean no_value = true;
                 while (args.length > i) {
                     arg = args[i];
-                    if (full_name.contains(arg.replaceFirst("^-", ""))) {
+                    if (arg.startsWith("-")) {
                         i--;
                         break;
                     }
+
                     if (!input_files.contains(arg)) {
                         File file = new File(arg);
                         if (file.exists()) {
@@ -183,12 +228,44 @@ public class Config {
                 if (no_value) {
                     System.out.println("[Err]Input arg not exist.");
                 }
-            } else if (arg.equals("-cc") || arg.equals("-opencc")) {
+            } else if (arg.equals("-r") || arg.equals("-refer")) {
+                i++;
+                boolean no_value = true;
+                while (args.length > i) {
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        break;
+                    }
+
+                    if (!refer_files.contains(arg)) {
+                        File file = new File(arg);
+                        if (file.exists()) {
+                            refer_files.add(arg);
+                            System.out.println("Refer: " + arg);
+                            no_value = false;
+                        } else
+                            System.out.println("[Err]Refer file not exist: " + arg);
+
+                    }
+                    i++;
+                }
+
+                if (no_value) {
+                    System.out.println("[Err]Refer arg not exist.");
+                }
+            }  else if (arg.equals("-cc") || arg.equals("-opencc")) {
                 i++;
                 if (args.length > i) {
-                    File file = new File(args[i]);
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        continue;
+                    }
+
+                    File file = new File(arg);
                     if (file.exists()) {
-                        opencc_path = args[i];
+                        opencc_path = arg;
                         System.out.println("Opencc: " + opencc_path);
                     } else
                         System.out.println("[Err]opencc file not exist: " + args[i]);
@@ -199,12 +276,18 @@ public class Config {
             } else if (arg.equals("-ccc") || arg.equals("-opencc-config")) {
                 i++;
                 if (args.length > i) {
-                    File file = new File(args[i]);
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        continue;
+                    }
+
+                    File file = new File(arg);
                     if (file.exists()) {
-                        opencc_config = args[i];
+                        opencc_config = arg;
                         System.out.println("Opencc config: " + opencc_config);
                     } else
-                        System.out.println("[Err]opencc config file not exist: " + args[i]);
+                        System.out.println("[Err]opencc config file not exist: " + arg);
 
                 } else {
                     System.out.println("[Err]opencc config arg not exist.");
@@ -214,7 +297,7 @@ public class Config {
                 arg = args[i];
                 boolean no_value = true;
                 while (args.length > i) {
-                    if (full_name.contains(arg.replaceFirst("^-", ""))) {
+                    if (arg.startsWith("-")) {
                         i--;
                         break;
                     }
@@ -240,7 +323,7 @@ public class Config {
                 arg = args[i];
                 boolean no_value = true;
                 while (args.length > i) {
-                    if (full_name.contains(arg.replaceFirst("^-", ""))) {
+                    if (arg.startsWith("-")) {
                         i--;
                         break;
                     }
@@ -261,12 +344,12 @@ public class Config {
                 if (no_value) {
                     System.out.println("[Err]Blacklist fix arg not exist.");
                 }
-            } else if (arg.equals("-b") || arg.equals("-blacklist")) {
+            } else if (arg.equals("-br") || arg.equals("-blacklist-regex")) {
                 i++;
                 arg = args[i];
                 boolean no_value = true;
                 while (args.length > i) {
-                    if (full_name.contains(arg.replaceFirst("^-", ""))) {
+                    if (arg.startsWith("-")) {
                         i--;
                         break;
                     }
@@ -314,7 +397,7 @@ public class Config {
                 System.out.println("[Err]Input path missing.");
                 return false;
             }
-        }else{
+        } else {
             path = input_files.get(0);
         }
         if (path_w.length() < 1) {
