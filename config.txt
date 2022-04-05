@@ -1,0 +1,27 @@
+#使用命令 java -jar DumpMoegirl.jar -c config.txt 来调用配置文件完成爬虫任务
+#使用命令 java -jar Clean.jar -c config.txt 来调用配置文件完成纯文本词条过滤任务
+#使用#开头表示对参数进行注释（注意把参数名称和值同时注释掉）
+#允许多个参数，每行一个。行首行末的空字符会在处理时自动去除
+#参数请尽量不要包含空格和非英文
+#-debug
+	#debug用参数，使用此开关可以不填部分参数，使用默认路径
+-pageLimit
+	#debug使用，限制爬虫任务爬的页面数量
+	3
+-input_files
+	#输入文件的列表，允许多个参数；爬虫任务无需此参数
+-output_files
+	#输出文件的列表，wiki clean任务可以不填入此参数
+	moe.txt
+-opencc_path
+	#opencc可执行文件所在的路径（不含文件名）如果不设置opencc路径，则不使用简繁翻译
+-opencc_config
+	#opencc的配置文件所在的路径，是opencc_path的相对路径
+-blacklist
+	#废词列表文件，允许多个.当缺少废词时，不做废词过滤
+-blacklist_fix
+	#修复过杀废词
+-blacklist_regex
+	#废词正则表达式，允许多个。当词条不在废词列表中，但是与此正则表达式匹配时，输出到graylist文件中
+-less-output
+	#不保留转换过程产生的大部分中间文件。

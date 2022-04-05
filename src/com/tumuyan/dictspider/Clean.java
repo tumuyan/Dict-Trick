@@ -53,7 +53,7 @@ public class Clean {
             config_file = args[index + 1];
         }
         Config config = Utils.ReadConfig(config_file);
-        config.setDefault_path("A:\\ProjectPython\\zhwiki-20220320-all-titles-in-ns0");
+        config.setDefault_path("A:\\ProjectPython\\zhwiki-20220401-all-titles-in-ns0");
         config.Parse(args);
 
         if (!config.verifyInputPath()) {
@@ -73,13 +73,13 @@ public class Clean {
     public static void OutputWords(Dict dict, Config config) {
         try {
             Set<String> chs = dict.getChs();
-            String opencc_path = config.getOpencc_path();
-            String opencc_config = config.getOpencc_config();
             String path_w = config.getPath_w();
             boolean auto_delete = config.isAuto_delete();
 
 
             if (config.verifyOpencc()) {
+                String opencc_path = config.getOpencc_path();
+                String opencc_config = config.getOpencc_config();
                 WriteList(chs, path_w + ".cn.dict.txt", auto_delete, false);
 
                 OpenCC(path_w + ".cn.dict.txt", path_w + ".chs.dict.txt", opencc_path, opencc_config);

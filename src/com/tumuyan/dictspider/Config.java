@@ -314,10 +314,11 @@ public class Config {
                 System.out.println("[Err]Input path missing.");
                 return false;
             }
+        }else{
+            path = input_files.get(0);
         }
-
         if (path_w.length() < 1) {
-            path_w = path.replace(".dict.txt", "");
+            path_w = path.replace(".txt", "");
         }
         return true;
 

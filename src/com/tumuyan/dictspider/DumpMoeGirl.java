@@ -52,7 +52,7 @@ public class DumpMoeGirl {
         }
         Config config = Utils.ReadConfig(config_file);
 
-        config.setDefault_path_w("moegirl.txt");
+        config.setDefault_path_w("A:\\ProjectPython\\moegirl.txt");
 
         config.Parse(args);
 
