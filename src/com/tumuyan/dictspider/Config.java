@@ -11,6 +11,7 @@ public class Config {
     private String default_path = "";
     private String default_opencc_path = "";
     private String default_opencc_config = "";
+    private String[] default_whitelist;
     private String[] default_blacklist;
     private String[] default_blacklist_fix;
     private String[] default_blacklist_regex;
@@ -22,6 +23,7 @@ public class Config {
     private String opencc_path = "";  // opencc可执行文件所在的路径（不含文件名）
     private String opencc_config = ""; // opencc的配置文件所在的路径，是opencc_path的相对路径
 
+    private List<String> whitelist = new ArrayList<>();
     private List<String> blacklist = new ArrayList<>(); // 废词
     private List<String> blacklist_fix = new ArrayList<>(); // 修复过杀废词
     private List<String> blacklist_regex = new ArrayList<>(); // 废词正则表达式
@@ -40,6 +42,10 @@ public class Config {
         this.default_opencc_path = default_opencc_path;
     }
 
+    public void setDefault_whitelist(String[] default_whitelist) {
+        this.default_whitelist = default_whitelist;
+    }
+
     public void setDefault_blacklist(String[] default_blacklist) {
         this.default_blacklist = default_blacklist;
     }
@@ -52,6 +58,9 @@ public class Config {
         this.default_blacklist_regex = default_blacklist_regex;
     }
 
+    public List<String> getWhitelist() {
+        return whitelist;
+    }
 
     public List<String> getBlacklist() {
         return blacklist;
@@ -254,6 +263,32 @@ public class Config {
                 if (no_value) {
                     System.out.println("[Err]Refer arg not exist.");
                 }
+            } else if (arg.equals("-w") || arg.equals("-whitelist")) {
+                i++;
+                boolean no_value = true;
+                while (args.length > i) {
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        break;
+                    }
+
+                    if (!whitelist.contains(arg)) {
+                        File file = new File(arg);
+                        if (file.exists()) {
+                            whitelist.add(arg);
+                            System.out.println("Whitelist: " + arg);
+                            no_value = false;
+                        } else
+                            System.out.println("[Err]Whitelist file not exist: " + arg);
+
+                    }
+                    i++;
+                }
+
+                if (no_value) {
+                    System.out.println("[Err]Whitelist arg not exist.");
+                }
             }  else if (arg.equals("-cc") || arg.equals("-opencc")) {
                 i++;
                 if (args.length > i) {
@@ -294,9 +329,10 @@ public class Config {
                 }
             } else if (arg.equals("-b") || arg.equals("-blacklist")) {
                 i++;
-                arg = args[i];
                 boolean no_value = true;
                 while (args.length > i) {
+
+                    arg = args[i];
                     if (arg.startsWith("-")) {
                         i--;
                         break;
@@ -312,7 +348,6 @@ public class Config {
 
                     }
                     i++;
-                    arg = args[i];
                 }
 
                 if (no_value) {
@@ -320,9 +355,10 @@ public class Config {
                 }
             } else if (arg.equals("-bf") || arg.equals("-blacklist-fix")) {
                 i++;
-                arg = args[i];
                 boolean no_value = true;
                 while (args.length > i) {
+
+                    arg = args[i];
                     if (arg.startsWith("-")) {
                         i--;
                         break;
@@ -338,7 +374,6 @@ public class Config {
 
                     }
                     i++;
-                    arg = args[i];
                 }
 
                 if (no_value) {
@@ -346,9 +381,9 @@ public class Config {
                 }
             } else if (arg.equals("-br") || arg.equals("-blacklist-regex")) {
                 i++;
-                arg = args[i];
                 boolean no_value = true;
                 while (args.length > i) {
+                    arg = args[i];
                     if (arg.startsWith("-")) {
                         i--;
                         break;
@@ -359,7 +394,6 @@ public class Config {
                         no_value = false;
                     }
                     i++;
-                    arg = args[i];
                 }
 
                 if (no_value) {
@@ -431,6 +465,15 @@ public class Config {
 
     //如果没有 blacklist参数，可以不做黑名单过滤，无需退出
     public boolean verifyBlacklist() {
+        if (whitelist.size() < 1) {
+            if (debug && default_whitelist != null) {
+                whitelist = Arrays.asList(default_whitelist);
+            } else {
+                System.out.println("[Err]whitelist arg missing.");
+//                return false;
+            }
+        }
+
         if (blacklist.size() < 1) {
             if (debug && default_blacklist != null) {
                 blacklist = Arrays.asList(default_blacklist);

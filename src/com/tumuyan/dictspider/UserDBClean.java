@@ -3,6 +3,7 @@ package com.tumuyan.dictspider;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.tumuyan.dictspider.Utils.WriteList;
@@ -36,6 +37,10 @@ public class UserDBClean {
                 }
         );
 
+        config.setDefault_whitelist(new String[]{
+                "A:\\ProjectPython\\pinyin_simp.v.userdb.whitelist.txt"
+        });
+
         config.Parse(args);
 
         if (!config.verifyInputPath()) {
@@ -46,13 +51,21 @@ public class UserDBClean {
         UserDB refDB = new UserDB();
         for (String p : config.getRefer_files()) {
             System.out.println("Load refer: " + p);
-            refDB.add(ReadFile(p,true));
+            refDB.add(ReadFile(p, true, true));
+        }
+
+        UserDB whiteDB = new UserDB();
+        for (String p : config.getWhitelist()) {
+            System.out.println("Load whiteList: " + p);
+            whiteDB.add(ReadFile(p, false, true));
         }
 
 
         // 只处理一个文件
         UserDB inputDB = new UserDB(config.getCount_group());
         inputDB.addRefer(refDB.getC0());
+        inputDB.addWhiteList(whiteDB.getC0());
+        inputDB.addBlacklistRegex(config.getBlacklist_regex());
 
         List<String> inputfiles = config.getInput_files();
         if (inputfiles.size() > 0) {
@@ -60,18 +73,17 @@ public class UserDBClean {
             System.out.println("Load file: " + inputpath);
             try {
                 FileInputStream fileInputStream = new FileInputStream(inputpath);
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, StandardCharsets.UTF_8));
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
                     if (line.length() < 2)
                         continue;
-                    inputDB.add(line,false);
+                    inputDB.add(line, false, false);
                 }
                 fileInputStream.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
             inputDB.WriteWordByCountGroup(config.getPath_w());
         }
@@ -79,13 +91,18 @@ public class UserDBClean {
     }
 
 
-    public static UserDB ReadFile(String path,boolean swap) {
-
+    public static UserDB ReadFile(String path, boolean isSchemaDict, boolean addToC0) {
         UserDB dict = new UserDB();
+        return ReadFile(dict, path, isSchemaDict, addToC0);
+    }
+
+
+    public static UserDB ReadFile(UserDB dict, String path, boolean isSchemaDict, boolean addToC0) {
+//        UserDB dict = new UserDB();
 
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, StandardCharsets.UTF_8));
 
             String line;
 
@@ -94,7 +111,7 @@ public class UserDBClean {
 //              如果匹配到空行
                 if (line.length() < 2)
                     continue;
-                dict.add(line,swap);
+                dict.add(line, isSchemaDict, addToC0);
             }
 
             fileInputStream.close();

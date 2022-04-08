@@ -11,8 +11,8 @@ public class UserDict {
         this(str, false);
     }
 
-    public UserDict(String str, boolean swap) {
-        if (swap) {
+    public UserDict(String str, boolean isSchemaDict) {
+        if (isSchemaDict) {
 
 //  解析rime词库，词条在前，编码在后（且只需要词条和编码
             String[] strings = str.split("\t");

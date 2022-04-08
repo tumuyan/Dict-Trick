@@ -1,6 +1,7 @@
 package com.tumuyan.dictspider;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,7 +33,8 @@ public class Utils {
                         ".+乡$",
                         ".+镇$",
                         ".+街道$",
-                        "^.{1,3}街$"
+                        "^.{1,3}街$",
+                        "[^0-9a-zA-Z]{0,2}[0-9a-zA-Z]+"
                 }
         );
 
@@ -145,14 +147,27 @@ public class Utils {
 
     public static void Write(String path, List<UserDict> list, boolean append_file) {
         try {
+/*
             File file = new File(path);
             FileOutputStream fileOutputStream = new FileOutputStream(file, append_file);
 
             for (UserDict item : list) {
                 fileOutputStream.write(item.full.getBytes());
+//                fileOutputStream.write(item.full.getBytes(StandardCharsets.UTF_8));
                 fileOutputStream.write('\n');
+
             }
             fileOutputStream.close();
+
+*/
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8);
+            for (UserDict item : list) {
+                oStreamWriter.append(item.full);
+                oStreamWriter.append('\n');
+            }
+            oStreamWriter.close();
+
+//            System.out.println(">1 "+ list.get(0).full);
 
             System.out.println(new Date().toString() + " [Done] size=" + list.size() + " \t" + path);
         } catch (Exception e) {

@@ -20,13 +20,17 @@ public class UserDB {
             c1 = new ArrayList<>(),
             c0 = new ArrayList<>(),
             a = new ArrayList<>(),
-            b = new ArrayList<>();
+            b = new ArrayList<>(),
+            d = new ArrayList<>(),
+            e = new ArrayList<>();
 
     private List<Integer> countGroup;
     private Map<Integer, Integer> groupMap;
     private Map<String, List<String>> wordMap;
+    private Set<String> passbySet;
     private int groupSize;
     private int countMax = Integer.MIN_VALUE;
+    private List<String> blacklistRegex = new ArrayList<>();
 
     public List<UserDict> getC0() {
         return c0;
@@ -37,6 +41,7 @@ public class UserDB {
         countGroup.add(Integer.MAX_VALUE);
         groupMap = new HashMap<>();
         wordMap = new HashMap<>();
+        passbySet = new HashSet<>();
         groupSize = 0;
     }
 
@@ -48,6 +53,7 @@ public class UserDB {
             countMax = countGroup.get(groupSize - 1);
         groupMap = new HashMap<>();
         wordMap = new HashMap<>();
+        passbySet = new HashSet<>();
     }
 
     public void add(UserDB db) {
@@ -69,16 +75,34 @@ public class UserDB {
         }
     }
 
-    public void add(String record) {
-        add(record, false);
+    public void addWhiteList(List<UserDict> list) {
+        for (UserDict item : list) {
+//            passbySet.add(item.word+'\t'+item.full);
+            passbySet.add(item.word);
+        }
     }
 
-    public void add(String record, boolean swap) {
-        UserDict o = new UserDict(record, swap);
-        if (swap) {
+    public void addBlacklistRegex(List<String> blacklistRegex) {
+        this.blacklistRegex.addAll(blacklistRegex);
+    }
+
+
+    public void add(String record) {
+        add(record, false, false);
+    }
+
+    public void add(String record, boolean isSchemaDict, boolean addToC0) {
+        UserDict o = new UserDict(record, isSchemaDict);
+        if (isSchemaDict || addToC0) {
             c0.add(o);
             return;
         }
+
+        if (passbySet.contains(o.word)) {
+            e.add(o);
+            return;
+        }
+
         int index;
         if (o.count != 0) {
             if (wordMap.containsKey(o.word)) {
@@ -91,6 +115,13 @@ public class UserDB {
                 }
                 b.add(o);
                 return;
+            }
+
+            for (String s : blacklistRegex) {
+                if (o.full.matches(s)) {
+                    d.add(o);
+                    return;
+                }
             }
 
             if (o.count > countMax) {
@@ -152,9 +183,10 @@ public class UserDB {
         if (c10.size() > 0) Write(path_w + ".c10.txt", c10, false);
 */
 
-        if (a.size() > 0) Write(path_w + ".a.txt", a, false);
-        if (b.size() > 0) Write(path_w + ".b.txt", b, false);
-
+        if (a.size() > 0) Write(path_w + ".match_dict.txt", a, false);
+        if (b.size() > 0) Write(path_w + ".different_code.txt", b, false);
+        if (d.size() > 0) Write(path_w + ".match_regex.txt", d, false);
+        if (e.size() > 0) Write(path_w + ".match_whitelist.txt", e, false);
         if (c0.size() > 0) Write(path_w + ".c0." + "-" + countGroup.get(0) + ".txt", c0, false);
         if (c1.size() > 0) Write(path_w + ".c1." + countGroup.get(0) + "-" + countGroup.get(1) + ".txt", c1, false);
         if (c2.size() > 0) Write(path_w + ".c2." + countGroup.get(1) + "-" + countGroup.get(2) + ".txt", c2, false);
