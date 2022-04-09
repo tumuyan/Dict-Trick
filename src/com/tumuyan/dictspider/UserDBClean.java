@@ -26,8 +26,7 @@ public class UserDBClean {
         Config config = Utils.ReadConfig(config_file);
         config.setDefault_path("A:\\ProjectPython\\pinyin_simp.userdb.txt");
         config.setDefault_blacklist((
-                "A:\\ProjectPython\\pinyin_simp.userdb.c2.txt;" +
-                        "A:\\ProjectPython\\pinyin_simp.userdb.b.txt;"
+                "A:\\ProjectPython\\pinyin_simp.v.userdb.blacklist.txt;"
         ).split(";"));
 
         config.setDefault_blacklist_regex(
@@ -47,6 +46,8 @@ public class UserDBClean {
             return;
         }
 
+        config.verifyBlacklist();
+
 
         UserDB refDB = new UserDB();
         for (String p : config.getRefer_files()) {
@@ -60,11 +61,18 @@ public class UserDBClean {
             whiteDB.add(ReadFile(p, false, true));
         }
 
+        UserDB blackDB = new UserDB();
+        for (String p : config.getBlacklist()) {
+            System.out.println("Load blackList: " + p);
+            blackDB.add(ReadFile(p, false, true));
+        }
+
 
         // 只处理一个文件
         UserDB inputDB = new UserDB(config.getCount_group());
         inputDB.addRefer(refDB.getC0());
         inputDB.addWhiteList(whiteDB.getC0());
+        inputDB.addBlackList(blackDB.getC0());
         inputDB.addBlacklistRegex(config.getBlacklist_regex());
 
         List<String> inputfiles = config.getInput_files();

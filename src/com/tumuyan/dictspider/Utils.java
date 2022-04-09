@@ -144,7 +144,35 @@ public class Utils {
         return true;
     }
 
+    public static void Write2(String path, String str, boolean append_file) {
+        try {
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(new FileOutputStream(path, append_file), StandardCharsets.UTF_8);
+            oStreamWriter.append(str);
+            oStreamWriter.append('\n');
+            oStreamWriter.close();
+//            System.out.println(new Date().toString() + " [Done] white2 \t" + path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+    }
+
+
+    // v2输出
+    public static void Write2(String path, StringBuffer buffer, boolean append_file) {
+        try {
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(new FileOutputStream(path, append_file), StandardCharsets.UTF_8);
+            oStreamWriter.append(buffer);
+            oStreamWriter.append('\n');
+            oStreamWriter.close();
+//            System.out.println(new Date().toString() + " [Done] white2 \t" + path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    // v2输出
     public static void Write(String path, List<UserDict> list, boolean append_file) {
         try {
 /*
@@ -160,7 +188,7 @@ public class Utils {
             fileOutputStream.close();
 
 */
-            OutputStreamWriter oStreamWriter = new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8);
+            OutputStreamWriter oStreamWriter = new OutputStreamWriter(new FileOutputStream(path, append_file), StandardCharsets.UTF_8);
             for (UserDict item : list) {
                 oStreamWriter.append(item.full);
                 oStreamWriter.append('\n');

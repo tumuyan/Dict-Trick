@@ -3,6 +3,7 @@ package com.tumuyan.dictspider;
 import java.util.*;
 
 import static com.tumuyan.dictspider.Utils.Write;
+import static com.tumuyan.dictspider.Utils.Write2;
 
 // 考虑到重复读写Map<Integer,List>存在效率问题,使用了穷举，并限制了分组数量。
 public class UserDB {
@@ -26,8 +27,9 @@ public class UserDB {
 
     private List<Integer> countGroup;
     private Map<Integer, Integer> groupMap;
-    private Map<String, List<String>> wordMap;
-    private Set<String> passbySet;
+    private Map<String, List<String>> referMap;
+    private Set<String> whiteList, blackList;
+    private StringBuffer head;
     private int groupSize;
     private int countMax = Integer.MIN_VALUE;
     private List<String> blacklistRegex = new ArrayList<>();
@@ -40,9 +42,11 @@ public class UserDB {
         this.countGroup = new ArrayList<>();
         countGroup.add(Integer.MAX_VALUE);
         groupMap = new HashMap<>();
-        wordMap = new HashMap<>();
-        passbySet = new HashSet<>();
+        referMap = new HashMap<>();
+        whiteList = new HashSet<>();
+        blackList = new HashSet<>();
         groupSize = 0;
+        head = new StringBuffer();
     }
 
     public UserDB(List<Integer> countGroup) {
@@ -52,8 +56,10 @@ public class UserDB {
         if (groupSize > 0)
             countMax = countGroup.get(groupSize - 1);
         groupMap = new HashMap<>();
-        wordMap = new HashMap<>();
-        passbySet = new HashSet<>();
+        referMap = new HashMap<>();
+        whiteList = new HashSet<>();
+        blackList = new HashSet<>();
+        head = new StringBuffer();
     }
 
     public void add(UserDB db) {
@@ -65,20 +71,26 @@ public class UserDB {
         for (UserDict item : list) {
             String word = item.word;
             List<String> l;
-            if (wordMap.containsKey(word)) {
-                l = wordMap.get(word);
+            if (referMap.containsKey(word)) {
+                l = referMap.get(word);
             } else {
                 l = new ArrayList<>();
             }
             l.add(item.code);
-            wordMap.put(word, l);
+            referMap.put(word, l);
         }
     }
 
     public void addWhiteList(List<UserDict> list) {
         for (UserDict item : list) {
-//            passbySet.add(item.word+'\t'+item.full);
-            passbySet.add(item.word);
+            whiteList.add(item.word);
+        }
+    }
+
+    public void addBlackList(List<UserDict> list) {
+        for (UserDict item : list) {
+            if (item.word != null && item.code != null)
+                blackList.add(item.word + '\t' + item.code);
         }
     }
 
@@ -86,27 +98,39 @@ public class UserDB {
         this.blacklistRegex.addAll(blacklistRegex);
     }
 
-
     public void add(String record) {
         add(record, false, false);
     }
 
     public void add(String record, boolean isSchemaDict, boolean addToC0) {
+        if (record.startsWith("#")) {
+            head.append(record);
+            head.append('\n');
+            return;
+        }
         UserDict o = new UserDict(record, isSchemaDict);
         if (isSchemaDict || addToC0) {
             c0.add(o);
             return;
         }
 
-        if (passbySet.contains(o.word)) {
+        if (whiteList.contains(o.word)) {
             e.add(o);
             return;
         }
 
+
         int index;
         if (o.count != 0) {
-            if (wordMap.containsKey(o.word)) {
-                List<String> list = wordMap.get(o.word);
+
+            if (blackList.size() > 0) {
+                if (blackList.contains(o.word + '\t' + o.code)) {
+                    return;
+                }
+            }
+
+            if (referMap.containsKey(o.word)) {
+                List<String> list = referMap.get(o.word);
                 for (String s : list) {
                     if (s.equals(o.code)) {
                         a.add(o);
@@ -168,20 +192,38 @@ public class UserDB {
     //    部分词条不在废词列表内，但是也不在修复列表中。这些词条大概率后续会列入废词列表中
     public void WriteWordByCountGroup(String path_w) {
         System.out.println(new Date() + " WriteWordByCountGroup...");
-/*
 
-        if (c0.size() > 0) Write(path_w + ".c0.txt", c0, false);
-        if (c1.size() > 0) Write(path_w + ".c1.txt", c1, false);
-        if (c2.size() > 0) Write(path_w + ".c2.txt", c2, false);
-        if (c3.size() > 0) Write(path_w + ".c3.txt", c3, false);
-        if (c4.size() > 0) Write(path_w + ".c4.txt", c4, false);
-        if (c5.size() > 0) Write(path_w + ".c5.txt", c5, false);
-        if (c6.size() > 0) Write(path_w + ".c6.txt", c6, false);
-        if (c7.size() > 0) Write(path_w + ".c7.txt", c7, false);
-        if (c8.size() > 0) Write(path_w + ".c8.txt", c8, false);
-        if (c9.size() > 0) Write(path_w + ".c9.txt", c9, false);
-        if (c10.size() > 0) Write(path_w + ".c10.txt", c10, false);
-*/
+        Write2(path_w + ".auto_output.txt", head, false);
+
+        Write2(path_w + ".auto_output.txt",
+                "# generate by Dict Trick, https://github.com/tumuyan/Dict-Trick"
+                , true);
+
+
+        if (groupSize < 1) {
+            Write2(path_w + ".auto_output.txt",
+                    "# contains C0, match_dict, match_whitelist"
+                    , true);
+            Write(path_w + ".auto_output.txt", c0, true);
+        } else {
+            Write2(path_w + ".auto_output.txt", new StringBuffer(
+                    "# contains match_dict, match_whitelist, C2~C10"
+            ), true);
+        }
+        Write(path_w + ".auto_output.txt", a, true);
+        Write(path_w + ".auto_output.txt", e, true);
+
+        if (c1.size() > 0) Write(path_w + ".auto_output.txt", c1, true);
+        if (c2.size() > 0) Write(path_w + ".auto_output.txt", c2, true);
+        if (c3.size() > 0) Write(path_w + ".auto_output.txt", c3, true);
+        if (c4.size() > 0) Write(path_w + ".auto_output.txt", c4, true);
+        if (c5.size() > 0) Write(path_w + ".auto_output.txt", c5, true);
+        if (c6.size() > 0) Write(path_w + ".auto_output.txt", c6, true);
+        if (c7.size() > 0) Write(path_w + ".auto_output.txt", c7, true);
+        if (c8.size() > 0) Write(path_w + ".auto_output.txt", c8, true);
+        if (c9.size() > 0) Write(path_w + ".auto_output.txt", c9, true);
+        if (c10.size() > 0) Write(path_w + ".auto_output.txt", c10, true);
+
 
         if (a.size() > 0) Write(path_w + ".match_dict.txt", a, false);
         if (b.size() > 0) Write(path_w + ".different_code.txt", b, false);
