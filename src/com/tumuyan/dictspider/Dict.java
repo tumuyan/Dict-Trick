@@ -96,8 +96,9 @@ public class Dict {
                 continue;
 
 //                匹配 xxx3季 北京国安足球俱乐部1997赛季  类似词条
-            if (s.matches(".+\\d.*(季|甲|线|線)"))
+            if (s.matches(".*[^A-Za-z](\\d.*|[A-Za-z])(季|甲|线|線)"))
                 continue;
+
 //                匹配 台5乙線
             if (s.matches(".+\\d+.?[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥快短字干热号总度路](线|線)?"))
                 continue;

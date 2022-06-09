@@ -19,7 +19,8 @@ public class Utils {
         config.setDefault_blacklist((
                 "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词.txt;" +
                         "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路.txt;" +
-                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路2.txt"
+                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路2.txt;"+
+                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-属.txt;"
         ).split(";"));
 
         config.setDefault_blacklist_fix(new String[]{"A:\\ProjectOthers\\rime-pinyin-simp\\others\\修复-村县镇乡路村縣鎮鄉路.txt"});
@@ -34,7 +35,8 @@ public class Utils {
                         ".+镇$",
                         ".+街道$",
                         "^.{1,3}街$",
-                        "[^0-9a-zA-Z]{0,2}[0-9a-zA-Z]+"
+                        "[^0-9a-zA-Z]{0,2}[0-9a-zA-Z]+",
+                        ".*[^相属云不波眷所莫归]属"
                 }
         );
 
@@ -249,5 +251,7 @@ public class Utils {
             e.printStackTrace();
         }
     }
+
+
 
 }

@@ -136,7 +136,7 @@ public class DumpMoeGirl {
             if (i > 0) {
                 Thread.sleep(60000 * i + 2000);
             }
-            Connection.Response res = Jsoup.connect(url)
+            Connection.Response res = Jsoup.connect(UrlEncoder.GetRealUrl(url))
                     .header("Accept", "*/*")
                     .header("Accept-Encoding", "gzip, deflate")
                     .header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
