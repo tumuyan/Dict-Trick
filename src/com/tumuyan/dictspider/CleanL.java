@@ -41,6 +41,9 @@ use_preset_vocabulary: false
 
 
 public class CleanL {
+    // 使用过滤器去除普通中文词条
+    static String[] filters = {"[一-龥]+"};
+    // ^[^一-龟] 在深蓝转换前检视非中文开头的词条
 
     public static void main(String[] args) {
 
@@ -54,7 +57,7 @@ public class CleanL {
             config_file = args[index + 1];
         }
         Config config = Utils.ReadConfig(config_file);
-        config.setDefault_path("A:\\ProjectPython\\zhwiki-20220601-all-titles-in-ns0");
+        config.setDefault_path("A:\\ProjectPython\\zhwiki-20221120-all-titles-in-ns0");
         config.Parse(args);
 
         if (!config.verifyInputPath()) {
@@ -63,17 +66,14 @@ public class CleanL {
 
         Dict dict = new Dict();
 
-        // 使用过滤器去除普通中文词条
-        String[] filters = {"[一-龟]+"};
 
         for (String p : config.getInput_files()) {
             System.out.println("Load file: " + p);
-            dict.add(ReadFile(p,filters ));
+            dict.add(ReadFile(p, filters));
         }
 
         OutputWords(dict, config);
     }
-
 
 
     public static void OutputWords(Dict dict, Config config) {
@@ -101,6 +101,18 @@ public class CleanL {
                 WriteGrayWords(chs, path_w, config.getBlacklist_fix(), config.getBlacklist_regex());
             }
 
+            Set<String> tmp = new HashSet<>();
+            s:
+            for (String s : chs) {
+                for (String filter : filters) {
+                    if (s.matches(filter)) {
+                        tmp.add(s);
+                        continue s;
+                    }
+                }
+            }
+            chs.removeAll(tmp);
+
             WriteList(chs, path_w + ".dict.txt", auto_delete, false);
             if (!config.isLess_output()) {
                 WriteList(dict.getEng(), path_w + ".eng.dict.txt", auto_delete, false);
@@ -114,7 +126,6 @@ public class CleanL {
 
         System.out.println("Finish");
     }
-
 
 
     // 读取文件，并且使用filter作为正则对词条进行过滤，符合规则的不加载
@@ -135,8 +146,8 @@ public class CleanL {
                 if (line.length() < 2)
                     continue;
 
-                for(String filter:filters){
-                    if(line.matches(filter))
+                for (String filter : filters) {
+                    if (line.matches(filter))
                         continue l;
                 }
 

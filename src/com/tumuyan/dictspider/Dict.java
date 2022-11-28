@@ -327,6 +327,7 @@ public class Dict {
     public String regular(String input) {
         char[] c = input.trim().toCharArray();
         for (int i = 0; i < c.length; i++) {
+
 //｢ ff62
             if (c[i] > 65280 && c[i] < 65375) {
                 //其他字符半角(33-126)与全角(65281-65374)的对应关系是：均相差65248
@@ -351,7 +352,8 @@ public class Dict {
         }
 
         return new String(c).replaceAll("([\u4e00-\u9fff])([a-zA-Z-]+[_\\s])", "$1_$2")
-                .replaceAll("([_\\s][a-zA-Z-]+)([\u4e00-\u9fff])", "$1_$2");
+                .replaceAll("([_\\s][a-zA-Z-]+)([\u4e00-\u9fff])", "$1_$2")
+                .replace("\u200B","");
     }
 }
 

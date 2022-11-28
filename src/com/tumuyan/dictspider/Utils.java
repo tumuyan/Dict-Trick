@@ -17,13 +17,17 @@ public class Utils {
         config.setDefault_opencc_config("t2s.json");
 
         config.setDefault_blacklist((
-                "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词.txt;" +
+                "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-混合词条.txt;" +
                         "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路.txt;" +
                         "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-村县镇乡路村縣鎮鄉路2.txt;"+
-                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-属.txt;"
+                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-属.txt;"+
+                        "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词.txt;"
         ).split(";"));
 
-        config.setDefault_blacklist_fix(new String[]{"A:\\ProjectOthers\\rime-pinyin-simp\\others\\修复-村县镇乡路村縣鎮鄉路.txt"});
+        config.setDefault_blacklist_fix(new String[]{
+                "A:\\ProjectOthers\\rime-pinyin-simp\\others\\修复-村县镇乡路村縣鎮鄉路.txt",
+                "A:\\ProjectOthers\\rime-pinyin-simp\\others\\修复-混合词条.txt",
+        });
 
         config.setDefault_blacklist_regex(
                 new String[]{

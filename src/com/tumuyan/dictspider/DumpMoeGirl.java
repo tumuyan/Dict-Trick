@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class DumpMoeGirl {
         StringBuffer buffer = new StringBuffer();
 
         String next = null;
+        List<String> nexts = new ArrayList<>();
 
         int page = 0;
         while (page < config.getPageLimit()) {
@@ -94,7 +96,14 @@ public class DumpMoeGirl {
 
                 if (json.has("continue")) {
                     obj = json.getJSONObject("continue");
-                    next = obj.getString("apcontinue");
+                    String next_1 = obj.getString("apcontinue");
+                    if (nexts.contains(next_1)) {
+                        System.out.println("\nErr: next contains; next=" + next + ", next_1=" + next_1);
+//                        break;
+                    } else {
+                        nexts.add(next_1);
+                    }
+                    next = next_1;
                 } else {
                     System.out.println("Done: accontinue not exit; next=" + next);
                     break;
@@ -124,25 +133,28 @@ public class DumpMoeGirl {
         String site = "https://mzh.moegirl.org.cn";
         String url = site + "/api.php?action=query&list=allpages&format=json&aplimit=500";
 
-        if (s != null)
-            url = url + "&apcontinue=" + s;
-
-        if (i > 3) {
-            return null;
-        }
-
         try {
-            Thread.sleep(3000);
+
+            if (i > 3) {
+                return null;
+            }
+
+            Thread.sleep(600);
             if (i > 0) {
                 Thread.sleep(60000 * i + 2000);
             }
-            Connection.Response res = Jsoup.connect(UrlEncoder.GetRealUrl(url))
+
+            Connection connection = Jsoup.connect(UrlEncoder.GetRealUrl(url))
                     .header("Accept", "*/*")
                     .header("Accept-Encoding", "gzip, deflate")
                     .header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
                     .header("Content-Type", "application/json;charset=UTF-8")
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
-                    .timeout(10000).ignoreContentType(true).execute();//.get();
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0");
+            if (s != null) {
+                if (!s.isEmpty())
+                    connection.data("apcontinue", s);
+            }
+            Connection.Response res = connection.timeout(10000).ignoreContentType(true).execute();//.get();
             String body = res.body();
 
             JSONObject json = new JSONObject(body);
