@@ -116,7 +116,7 @@ public class DumpMoeGirl {
         }
 
 
-        System.out.println("Dump finish, " + page);
+        System.out.println("Dump finish, page=" + page);
 
         try {
             Write(config.getPath_w() + "txt", buffer, config.isAuto_delete());

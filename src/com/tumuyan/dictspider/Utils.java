@@ -2,7 +2,6 @@ package com.tumuyan.dictspider;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -32,15 +31,15 @@ public class Utils {
         config.setDefault_blacklist_regex(
                 new String[]{
                         ".*新干线.+",
-                        ".+路$",
-                        ".+村$",
-                        ".+县$",
-                        ".+乡$",
-                        ".+镇$",
+                        ".+[路村县乡镇]$",
                         ".+街道$",
                         "^.{1,3}街$",
                         "[^0-9a-zA-Z]{0,2}[0-9a-zA-Z]+",
-                        ".*[^相属云不波眷所莫归]属"
+                        ".*[^相属云不波眷所莫归]属",
+                        ".{2,}[表]$",
+                        "[^新][娘]$",
+                        "^[^a-zA-Z][a-zA-Z]+$",
+                        ".+的反应$"
                 }
         );
 
@@ -51,7 +50,7 @@ public class Utils {
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-            String line = null;
+            String line;
 
             while ((line = bufferedReader.readLine()) != null) {
 //              如果匹配到空行
@@ -81,7 +80,7 @@ public class Utils {
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-            String line = null;
+            String line;
 
             while ((line = bufferedReader.readLine()) != null) {
 //              如果匹配到空行
@@ -130,7 +129,7 @@ public class Utils {
             }
         }
         fileOutputStream.close();
-        System.out.println(new Date().toString() + " [Done] size=" + counter + " \t" + path);
+        System.out.println(new Date() + " [Done] size=" + counter + " \t" + path);
     }
 
 
@@ -181,29 +180,13 @@ public class Utils {
     // v2输出
     public static void Write(String path, List<UserDict> list, boolean append_file) {
         try {
-/*
-            File file = new File(path);
-            FileOutputStream fileOutputStream = new FileOutputStream(file, append_file);
-
-            for (UserDict item : list) {
-                fileOutputStream.write(item.full.getBytes());
-//                fileOutputStream.write(item.full.getBytes(StandardCharsets.UTF_8));
-                fileOutputStream.write('\n');
-
-            }
-            fileOutputStream.close();
-
-*/
             OutputStreamWriter oStreamWriter = new OutputStreamWriter(new FileOutputStream(path, append_file), StandardCharsets.UTF_8);
             for (UserDict item : list) {
                 oStreamWriter.append(item.full);
                 oStreamWriter.append('\n');
             }
             oStreamWriter.close();
-
-//            System.out.println(">1 "+ list.get(0).full);
-
-            System.out.println(new Date().toString() + " [Done] size=" + list.size() + " \t" + path);
+            System.out.println(new Date() + " [Done] size=" + list.size() + " \t" + path);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -229,7 +212,7 @@ public class Utils {
     public static void OpenCC(String inputPath, String outputPath, String openccPath, String openccConfig) {
         String command = (openccPath + File.separator + "opencc -i " + inputPath + " -o " + outputPath + " -c " + openccPath + File.separator + openccConfig);
 
-        System.out.println(new Date().toString() + " exec OpenCC, Command = " + command);
+        System.out.println(new Date() + " exec OpenCC, Command = " + command);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
@@ -243,13 +226,13 @@ public class Utils {
 
             process.waitFor();
             if (process.exitValue() != 0) {
-                System.out.println(new Date().toString() + " exec OpenCC error!");
+                System.out.println(new Date() + " exec OpenCC error!");
             }
 
             bis.close();
             br.close();
 
-            System.out.println(new Date().toString() + " exec OpenCC finish");
+            System.out.println(new Date() + " exec OpenCC finish");
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

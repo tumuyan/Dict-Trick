@@ -49,7 +49,9 @@ public class Dict {
                     .replaceFirst("[①-⒛Ⅰ-ⅻ]+$", "")
                     .replaceFirst("(?<=[座])[\u0370-\u03FFa-zA-Z].*$", "")
                     .replaceFirst("^([①-⒛Ⅰ-ⅻIVX&-]{2,8})?[-・·&%'\\s∀-⋿⌀-⸩]+", "")
-                    .replaceFirst("[-・·&'─\\s]+$", "");
+                    .replaceFirst("[-・·&'─\\s]+$", "")
+                    .replaceFirst("^(漫画|电影|剧场|新剧场|.国)版(?!权)","");
+
 
 
 //                wiki词库不保留单字。
@@ -183,7 +185,7 @@ public class Dict {
             } else {
 
                 if (s.matches(".+-.+")) {
-//                    处理 哈利·波特 哈利—波特 重复出现   to do
+                    //todo 处理 哈利·波特 哈利—波特 重复出现
                 }
                 chs.add(s);
             }
@@ -198,8 +200,7 @@ public class Dict {
 
         suffix = new HashSet<>();
 
-        Set<String> set = new HashSet<>();
-        set.addAll(chs);
+        Set<String> set = new HashSet<>(chs);
 
         if (chn.size() > 0) {
 

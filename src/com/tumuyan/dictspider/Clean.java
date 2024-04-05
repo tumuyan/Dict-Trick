@@ -53,7 +53,7 @@ public class Clean {
             config_file = args[index + 1];
         }
         Config config = Utils.ReadConfig(config_file);
-        config.setDefault_path("A:\\ProjectPython\\zhwiki-20220920-all-titles-in-ns0");
+        config.setDefault_path("A:\\ProjectPython\\zhwiki-20240401-all-titles-in-ns0");
         config.Parse(args);
 
         if (!config.verifyInputPath()) {
@@ -138,7 +138,26 @@ public class Clean {
                 }
             }
         }
-        WriteList(grayWords, path_w + ".gray.dict.txt", true, false);
+        WriteList(new LinkedHashSet<>(sortWords(grayWords)), path_w + ".gray.dict.txt", true, false);
+    }
+
+
+    public static List<String> sortWords(Set<String> grayWords) {
+        List<String> sortedWords = new ArrayList<>(grayWords);
+
+        sortedWords.sort((s1, s2) -> {
+            int minLength = Math.min(s1.length(), s2.length());
+            for (int i = 1; i <= minLength; i++) {
+                char c1 = s1.charAt(s1.length() - i);
+                char c2 = s2.charAt(s2.length() - i);
+                if (c1 != c2) {
+                    return c1 - c2;
+                }
+            }
+            return s1.length() - s2.length();
+        });
+
+        return sortedWords;
     }
 
 
