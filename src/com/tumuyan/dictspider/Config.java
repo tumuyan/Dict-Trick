@@ -136,294 +136,299 @@ public class Config {
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-            if (arg.equals("-h") || arg.equals("-help")) {
-                System.out.println("help\n");
-                return;
-            } else if (arg.equals("-a")) {
-                auto_delete = true;
-            } else if (arg.equals("-d") || arg.equals("-debug")) {
-                debug = true;
-            } else if (arg.equals("-l") || arg.equals("-less-output")) {
-                less_output = true;
-            } else if (arg.equals("-o") || arg.equals("-output")) {
-                i++;
-                if (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        continue;
-                    }
+            switch (arg) {
+                case "-h", "-help" -> {
+                    System.out.println("help\n");
+                    return;
+                }
+                case "-a" -> auto_delete = true;
+                case "-d", "-debug" -> debug = true;
+                case "-l", "-less-output" -> less_output = true;
+                case "-o", "-output" -> {
+                    i++;
+                    if (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            continue;
+                        }
 
-                    path_w = arg.replaceFirst("(\\.[^./\\\\]+)?[/\\\\]?$", ".");
-                    File file = new File(path_w).getParentFile();
+                        path_w = arg.replaceFirst("(\\.[^./\\\\]+)?[/\\\\]?$", ".");
+                        File file = new File(path_w).getParentFile();
 
-                    if (file == null) {
+                        if (file == null) {
 //                        File f = new File(new File(System.getProperty("user.dir")),path_w);
 //                        File f = new File(DumpMoeGirl.class.getClassLoader().getResource("").getFile());
-                        File f = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
-                        f = new File(f.getParentFile(), path_w);
+                            File f = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
+                            f = new File(f.getParentFile(), path_w);
 
-                        file = f.getParentFile();
-                        path_w = f.getPath();
-                    }
+                            file = f.getParentFile();
+                            path_w = f.getPath();
+                        }
 
-                    if (file.exists()) {
-                        System.out.println("Output to: " + path_w);
+                        if (file.exists()) {
+                            System.out.println("Output to: " + path_w);
+                        } else {
+                            path_w = "";
+                            System.out.println("[Err]Output folder not exist: " + file.getPath());
+                        }
+
                     } else {
-                        path_w = "";
-                        System.out.println("[Err]Output folder not exist: " + file.getPath());
+                        System.out.println("[Err]Output arg not exist.");
                     }
-
-                } else {
-                    System.out.println("[Err]Output arg not exist.");
                 }
-            } else if (arg.equals("-p") || arg.equals("-pagelimit")) {
-                i++;
-                if (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        continue;
-                    }
+                case "-p", "-pagelimit" -> {
+                    i++;
+                    if (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            continue;
+                        }
 
-                    pageLimit = Integer.parseInt(arg);
-                    if (pageLimit == null) {
-                        pageLimit = Integer.MAX_VALUE;
-                        System.out.println("[Err]unexpected pageLimit arg and disable pageLimit: " + args[i]);
+                        pageLimit = Integer.parseInt(arg);
+                    } else {
+                        System.out.println("[Err]pageLimit arg not exist.");
                     }
-                } else {
-                    System.out.println("[Err]pageLimit arg not exist.");
                 }
-            } else if (arg.equals("-cg") || arg.equals("-count-group")) {
-                i++;
-                if (args.length > i) {
-                    arg = args[i];
-                    if (arg.matches("[:0-9]+")) {
-                        String[] counts = arg.split(":");
-                        Integer u = Integer.MIN_VALUE;
-                        for (String c : counts) {
-                            Integer v = Integer.parseInt(c);
-                            if (v != null) {
+                case "-cg", "-count-group" -> {
+                    i++;
+                    if (args.length > i) {
+                        arg = args[i];
+                        if (arg.matches("[:0-9]+")) {
+                            String[] counts = arg.split(":");
+                            int u = Integer.MIN_VALUE;
+                            for (String c : counts) {
+                                int v = Integer.parseInt(c);
                                 if (v > u) {
                                     u = v;
                                     count_group.add(v);
                                 }
                             }
+                        } else {
+                            i--;
+                            System.out.println("[Err]unexpected count-group arg: " + arg);
                         }
                     } else {
-                        i--;
-                        System.out.println("[Err]unexpected count-group arg: " + arg);
+                        System.out.println("[Err]count-group arg not exist.");
                     }
-                } else {
-                    System.out.println("[Err]count-group arg not exist.");
                 }
-            } else if (arg.equals("-i") || arg.equals("-input")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
+                case "-i", "-input" -> {
+                    i++;
+                    boolean no_value = true;
+                    while (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+
+                        if (!input_files.contains(arg)) {
+                            File file = new File(arg);
+                            if (file.exists()) {
+                                input_files.add(arg);
+                                System.out.println("Input: " + arg);
+                                no_value = false;
+                            } else
+                                System.out.println("[Err]Input file not exist: " + arg);
+
+                        }
+                        i++;
                     }
 
-                    if (!input_files.contains(arg)) {
+                    if (no_value) {
+                        System.out.println("[Err]Input arg not exist.");
+                    }
+                }
+                case "-r", "-refer" -> {
+                    i++;
+                    boolean no_value = true;
+                    while (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+
+                        if (!refer_files.contains(arg)) {
+                            File file = new File(arg);
+                            if (file.exists()) {
+                                refer_files.add(arg);
+                                System.out.println("Refer: " + arg);
+                                no_value = false;
+                            } else
+                                System.out.println("[Err]Refer file not exist: " + arg);
+
+                        }
+                        i++;
+                    }
+
+                    if (no_value) {
+                        System.out.println("[Err]Refer arg not exist.");
+                    }
+                }
+                case "-w", "-whitelist" -> {
+                    i++;
+                    boolean no_value = true;
+                    while (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+
+                        if (!whitelist.contains(arg)) {
+                            File file = new File(arg);
+                            if (file.exists()) {
+                                whitelist.add(arg);
+                                System.out.println("Whitelist: " + arg);
+                                no_value = false;
+                            } else
+                                System.out.println("[Err]Whitelist file not exist: " + arg);
+
+                        }
+                        i++;
+                    }
+
+                    if (no_value) {
+                        System.out.println("[Err]Whitelist arg not exist.");
+                    }
+                }
+                case "-cc", "-opencc" -> {
+                    i++;
+                    if (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            continue;
+                        }
+
                         File file = new File(arg);
                         if (file.exists()) {
-                            input_files.add(arg);
-                            System.out.println("Input: " + arg);
-                            no_value = false;
+                            opencc_path = arg;
+                            System.out.println("Opencc: " + opencc_path);
                         } else
-                            System.out.println("[Err]Input file not exist: " + arg);
+                            System.out.println("[Err]opencc file not exist: " + args[i]);
 
+                    } else {
+                        System.out.println("[Err]opencc arg not exist.");
                     }
+                }
+                case "-ccc", "-opencc-config" -> {
                     i++;
-                }
+                    if (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            continue;
+                        }
 
-                if (no_value) {
-                    System.out.println("[Err]Input arg not exist.");
-                }
-            } else if (arg.equals("-r") || arg.equals("-refer")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
-                    }
-
-                    if (!refer_files.contains(arg)) {
                         File file = new File(arg);
                         if (file.exists()) {
-                            refer_files.add(arg);
-                            System.out.println("Refer: " + arg);
-                            no_value = false;
+                            opencc_config = arg;
+                            System.out.println("Opencc config: " + opencc_config);
                         } else
-                            System.out.println("[Err]Refer file not exist: " + arg);
+                            System.out.println("[Err]opencc config file not exist: " + arg);
 
+                    } else {
+                        System.out.println("[Err]opencc config arg not exist.");
                     }
+                }
+                case "-b", "-blacklist" -> {
                     i++;
-                }
+                    boolean no_value = true;
+                    while (args.length > i) {
 
-                if (no_value) {
-                    System.out.println("[Err]Refer arg not exist.");
-                }
-            } else if (arg.equals("-w") || arg.equals("-whitelist")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+                        if (!blacklist.contains(arg)) {
+                            File file = new File(arg);
+                            if (file.exists()) {
+                                blacklist.add(arg);
+                                System.out.println("Blacklist: " + arg);
+                                no_value = false;
+                            } else
+                                System.out.println("[Err]Blacklist file not exist: " + arg);
+
+                        }
+                        i++;
                     }
 
-                    if (!whitelist.contains(arg)) {
+                    if (no_value) {
+                        System.out.println("[Err]Blacklist arg not exist.");
+                    }
+                }
+                case "-bf", "-blacklist-fix" -> {
+                    i++;
+                    boolean no_value = true;
+                    while (args.length > i) {
+
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+                        if (!blacklist_fix.contains(arg)) {
+                            File file = new File(arg);
+                            if (file.exists()) {
+                                blacklist_fix.add(arg);
+                                System.out.println("Blacklist fix file: " + arg);
+                                no_value = false;
+                            } else
+                                System.out.println("[Err]Blacklist fix file not exist: " + arg);
+
+                        }
+                        i++;
+                    }
+
+                    if (no_value) {
+                        System.out.println("[Err]Blacklist fix arg not exist.");
+                    }
+                }
+                case "-br", "-blacklist-regex" -> {
+                    i++;
+                    boolean no_value = true;
+                    while (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+                        if (!blacklist_regex.contains(arg)) {
+                            blacklist_regex.add(arg);
+                            System.out.println("Blacklist regex: " + arg);
+                            no_value = false;
+                        }
+                        i++;
+                    }
+
+                    if (no_value) {
+                        System.out.println("[Err]Blacklist regex arg not exist.");
+                    }
+                }
+                case "-pp", "-preprocessed-path" -> {
+                    i++;
+//                boolean no_value = true;
+                    while (args.length > i) {
+                        arg = args[i];
+                        if (arg.startsWith("-")) {
+                            i--;
+                            break;
+                        }
+
                         File file = new File(arg);
                         if (file.exists()) {
-                            whitelist.add(arg);
-                            System.out.println("Whitelist: " + arg);
-                            no_value = false;
+                            preprocessed_path = arg;
+                            System.out.println("preprocessed file: " + preprocessed_path);
                         } else
-                            System.out.println("[Err]Whitelist file not exist: " + arg);
+                            System.out.println("[Err]preprocessed file not exist: " + arg);
 
+
+                        i++;
                     }
-                    i++;
-                }
-
-                if (no_value) {
-                    System.out.println("[Err]Whitelist arg not exist.");
-                }
-            } else if (arg.equals("-cc") || arg.equals("-opencc")) {
-                i++;
-                if (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        continue;
-                    }
-
-                    File file = new File(arg);
-                    if (file.exists()) {
-                        opencc_path = arg;
-                        System.out.println("Opencc: " + opencc_path);
-                    } else
-                        System.out.println("[Err]opencc file not exist: " + args[i]);
-
-                } else {
-                    System.out.println("[Err]opencc arg not exist.");
-                }
-            } else if (arg.equals("-ccc") || arg.equals("-opencc-config")) {
-                i++;
-                if (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        continue;
-                    }
-
-                    File file = new File(arg);
-                    if (file.exists()) {
-                        opencc_config = arg;
-                        System.out.println("Opencc config: " + opencc_config);
-                    } else
-                        System.out.println("[Err]opencc config file not exist: " + arg);
-
-                } else {
-                    System.out.println("[Err]opencc config arg not exist.");
-                }
-            } else if (arg.equals("-b") || arg.equals("-blacklist")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
-                    }
-                    if (!blacklist.contains(arg)) {
-                        File file = new File(arg);
-                        if (file.exists()) {
-                            blacklist.add(arg);
-                            System.out.println("Blacklist: " + arg);
-                            no_value = false;
-                        } else
-                            System.out.println("[Err]Blacklist file not exist: " + arg);
-
-                    }
-                    i++;
-                }
-
-                if (no_value) {
-                    System.out.println("[Err]Blacklist arg not exist.");
-                }
-            } else if (arg.equals("-bf") || arg.equals("-blacklist-fix")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
-                    }
-                    if (!blacklist_fix.contains(arg)) {
-                        File file = new File(arg);
-                        if (file.exists()) {
-                            blacklist_fix.add(arg);
-                            System.out.println("Blacklist fix file: " + arg);
-                            no_value = false;
-                        } else
-                            System.out.println("[Err]Blacklist fix file not exist: " + arg);
-
-                    }
-                    i++;
-                }
-
-                if (no_value) {
-                    System.out.println("[Err]Blacklist fix arg not exist.");
-                }
-            } else if (arg.equals("-br") || arg.equals("-blacklist-regex")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
-                    }
-                    if (!blacklist_regex.contains(arg)) {
-                        blacklist_regex.add(arg);
-                        System.out.println("Blacklist regex: " + arg);
-                        no_value = false;
-                    }
-                    i++;
-                }
-
-                if (no_value) {
-                    System.out.println("[Err]Blacklist regex arg not exist.");
-                }
-            } else if (arg.equals("-pp") || arg.equals("-preprocessed-path")) {
-                i++;
-                boolean no_value = true;
-                while (args.length > i) {
-                    arg = args[i];
-                    if (arg.startsWith("-")) {
-                        i--;
-                        break;
-                    }
-
-                    File file = new File(arg);
-                    if (file.exists()) {
-                        preprocessed_path = arg;
-                        System.out.println("preprocessed file: " + preprocessed_path);
-                    } else
-                        System.out.println("[Err]preprocessed file not exist: " + arg);
-
-
-                    i++;
                 }
 
 //                if (no_value) {
@@ -450,7 +455,7 @@ public class Config {
 
     //   验证是否设置了输入路径，如果执行转换任务，缺少此参数必须退出
     public boolean verifyInputPath() {
-        String path = "";
+        String path;
 
         if (input_files.size() < 1) {
             if (debug && default_path.length() > 1) {

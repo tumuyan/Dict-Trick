@@ -13,12 +13,12 @@ public class Dict {
         suffix = new HashSet<>();
     }
 
-    public Dict(Dict dict) {
-        eng = dict.eng;
-        chs = dict.chs;
-        mix = dict.mix;
-        chn = dict.chn;
-    }
+//    public Dict(Dict dict) {
+//        eng = dict.eng;
+//        chs = dict.chs;
+//        mix = dict.mix;
+//        chn = dict.chn;
+//    }
 
     public void add(Dict dict) {
         eng.addAll(dict.eng);
@@ -98,11 +98,11 @@ public class Dict {
                 continue;
 
 //                匹配 xxx3季 北京国安足球俱乐部1997赛季  类似词条
-            if (s.matches(".*[^A-Za-z](\\d.*|[A-Za-z])(季|甲|线|線)"))
+            if (s.matches(".*[^A-Za-z](\\d.*|[A-Za-z])([季甲线線])"))
                 continue;
 
 //                匹配 台5乙線
-            if (s.matches(".+\\d+.?[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥快短字干热号总度路](线|線)?"))
+            if (s.matches(".+\\d+.?[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥快短字干热号总度路]([线線])?"))
                 continue;
 
             if (s.matches(".*[0-9零一二三四五六七八九十〇○百千][年月日周号號张路线綫線台章所军軍師师团團厂厰區区期次版旅街型届屆回度集话首A-z].*"))
@@ -232,7 +232,7 @@ public class Dict {
                     continue;
                 }
 
-                if (s1 == s11)
+                if (s1.equals(s11))
                     set.add(s1);
                 else
                     str.add(s1);

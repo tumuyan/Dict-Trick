@@ -3,6 +3,7 @@ package com.tumuyan.dictspider;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // 把文件切分为固定行数的一系列文件，忽略空行。
 public class FileSpliter {
@@ -16,12 +17,12 @@ public class FileSpliter {
         boolean auto_delete = false;
 
         for (int i = 0; i < args.length; i++) {
-            if (args[i] == "-h") {
+            if (Objects.equals(args[i], "-h")) {
                 System.out.println("help\n");
-            } else if (args[i] == "-a") {
+            } else if (Objects.equals(args[i], "-a")) {
                 auto_delete = true;
             }
-            if (args[i] == "-o") {
+            if (Objects.equals(args[i], "-o")) {
                 i++;
                 if (args.length > i) {
 
@@ -38,7 +39,7 @@ public class FileSpliter {
                 } else {
                     System.out.println("[Err]Output arg not exist.");
                 }
-            } else if (args[i] == "-r") {
+            } else if (Objects.equals(args[i], "-r")) {
                 // 未实现
                 if (!ref_files.contains(args[i])) {
                     File file = new File(args[i]);
@@ -65,16 +66,16 @@ public class FileSpliter {
             if (debug) {
                 path = "A:\\ProjectPython\\zhwiki-20210620-all-titles-in-ns0.chs.dict.yaml";
 //                path = "A:\\ProjectPython\\utf16test";
-                if(path_w=="")
+                if(path_w.equals(""))
                     path_w = path.replace(".dict.yaml", "")+".";
             }
-        } else if (path_w == "") {
+        } else if (path_w.equals("")) {
             path = input_files.get(0);
-            if(path_w=="")
+            if(path_w.equals(""))
                 path_w = path.replace(".dict.yaml", "")+".";
         }
 
-        if (path_w == "") {
+        if (path_w.equals("")) {
             File file = new File(path_w);
             if (file.exists()) {
                 if (auto_delete) {
@@ -119,7 +120,7 @@ public class FileSpliter {
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
 
-            String line = null;
+            String line;
 
             StringBuffer buffer = new StringBuffer();
 

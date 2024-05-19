@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,12 +28,12 @@ public class Main {
         boolean auto_delete = false;
 
         for (int i = 0; i < args.length; i++) {
-            if (args[i] == "-h") {
+            if (Objects.equals(args[i], "-h")) {
                 System.out.println("help\n");
-            } else if (args[i] == "-a") {
+            } else if (Objects.equals(args[i], "-a")) {
                 auto_delete = true;
             }
-            if (args[i] == "-o") {
+            if (Objects.equals(args[i], "-o")) {
                 i++;
                 if (args.length > i) {
 
@@ -49,7 +50,7 @@ public class Main {
                 } else {
                     System.out.println("[Err]Output arg not exist.");
                 }
-            } else if (args[i] == "-r") {
+            } else if (Objects.equals(args[i], "-r")) {
                 // 未实现
                 if (!ref_files.contains(args[i])) {
                     File file = new File(args[i]);
@@ -71,20 +72,19 @@ public class Main {
 
         String path = "";
 
-        if (input_files.size() < 1) {
+        if (input_files.isEmpty()) {
             if (debug) {
                 path = "A:\\ProjectPython\\liangfen.dict.yaml";
 //                path = "A:\\ProjectPython\\utf16test";
-                if(path_w=="")
+                if(path_w.isEmpty())
                     path_w = path.replace(".dict.yaml", "")+".pinyin.dict.yaml";
             }
-        } else if (path_w == "") {
+        } else if (path_w.isEmpty()) {
             path = input_files.get(0).replace(".dict.yaml", ".pinyin.dict.yaml");
-            if(path_w=="")
-                path_w = path.replace(".dict.yaml", "")+".pinyin.dict.yaml";
+            path_w = path.replace(".dict.yaml", "")+".pinyin.dict.yaml";
         }
 
-        if (path_w == "") {
+        if (path_w.isEmpty()) {
             File file = new File(path_w);
             if (file.exists()) {
                 if (auto_delete) {
@@ -101,7 +101,7 @@ public class Main {
         }
 
         if (input_files.size() < 2) {
-            keys = ReadFile(path, "", new ArrayList<String>());
+            keys = ReadFile(path, "", new ArrayList<>());
         } else {
             for (String p : input_files) {
                 keys = (ReadFile(p, "", keys));
@@ -121,21 +121,21 @@ public class Main {
 // path_w为空时，读取path每一行文本,如果包含tab，把第一个字到keys中；并返回key
 //    path_w不为空时，把带拼音的写入path_w并返回key
     public static ArrayList<String> ReadFile(String path, String path_w, ArrayList<String> keys) {
-        boolean only_read = path_w.length()<1;
+        boolean only_read = path_w.isEmpty();
 
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
 
-            String line = null;
+            String line;
 
             StringBuffer buffer = new StringBuffer();
 
             while ((line = bufferedReader.readLine()) != null) {
                 line = line.trim();
 //              如果匹配到空行
-                if (line.length() < 1)
+                if (line.isEmpty())
                     continue;
 
 //                if (!only_read){
