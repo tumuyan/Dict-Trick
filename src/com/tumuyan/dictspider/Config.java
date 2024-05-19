@@ -30,6 +30,8 @@ public class Config {
     private List<Integer> count_group = new ArrayList<>(); // 用户词条c值分组阈值
     private boolean less_output; //输出更少的文件
 
+    private String preprocessed_path = null; // 预处理后的中文词条的路径，使用此参数将直接走opencc处理
+
     public List<Integer> getCount_group() {
         return count_group;
     }
@@ -114,6 +116,10 @@ public class Config {
         return less_output;
     }
 
+    public String getPreprocessed_path() {
+        return preprocessed_path;
+    }
+
     public Config() {
 
     }
@@ -195,16 +201,16 @@ public class Config {
                     if (arg.matches("[:0-9]+")) {
                         String[] counts = arg.split(":");
                         Integer u = Integer.MIN_VALUE;
-                        for(String c:counts){
+                        for (String c : counts) {
                             Integer v = Integer.parseInt(c);
-                            if(v!=null){
-                                if(v>u){
-                                    u=v;
+                            if (v != null) {
+                                if (v > u) {
+                                    u = v;
                                     count_group.add(v);
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         i--;
                         System.out.println("[Err]unexpected count-group arg: " + arg);
                     }
@@ -289,7 +295,7 @@ public class Config {
                 if (no_value) {
                     System.out.println("[Err]Whitelist arg not exist.");
                 }
-            }  else if (arg.equals("-cc") || arg.equals("-opencc")) {
+            } else if (arg.equals("-cc") || arg.equals("-opencc")) {
                 i++;
                 if (args.length > i) {
                     arg = args[i];
@@ -399,6 +405,30 @@ public class Config {
                 if (no_value) {
                     System.out.println("[Err]Blacklist regex arg not exist.");
                 }
+            } else if (arg.equals("-pp") || arg.equals("-preprocessed-path")) {
+                i++;
+                boolean no_value = true;
+                while (args.length > i) {
+                    arg = args[i];
+                    if (arg.startsWith("-")) {
+                        i--;
+                        break;
+                    }
+
+                    File file = new File(arg);
+                    if (file.exists()) {
+                        preprocessed_path = arg;
+                        System.out.println("preprocessed file: " + preprocessed_path);
+                    } else
+                        System.out.println("[Err]preprocessed file not exist: " + arg);
+
+
+                    i++;
+                }
+
+//                if (no_value) {
+//                    System.out.println("[Err]preprocessed path arg not exist.");
+//                }
             }
         }
 

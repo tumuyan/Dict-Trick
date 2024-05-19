@@ -13,7 +13,7 @@ public class Utils {
     public static Config ReadConfig(String path) {
         Config config = new Config();
         config.setDefault_opencc_path("A:\\EBookTools\\OpenCC\\bin");
-        config.setDefault_opencc_config("t2s.json");
+        config.setDefault_opencc_config("C:\\prg\\WikiFilter\\scripts\\t2s.json");
 
         config.setDefault_blacklist((
                 "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-混合词条.txt;" +
@@ -132,6 +132,37 @@ public class Utils {
         System.out.println(new Date() + " [Done] size=" + counter + " \t" + path);
     }
 
+    // 把List<String>写入到指定文件中
+    public static void WriteList(List<String> keys, String path, boolean auto_delete, boolean show_log) throws Exception {
+        File file = new File(path);
+
+        if (keys.size() > 0) {
+            if (file.exists()) {
+                if (auto_delete) {
+                    file.delete();
+//                    System.out.println("[Done]Delete " + file.getPath());
+                }
+            }
+        }
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        int counter = 0;
+
+        for (String s : keys) {
+            try {
+                fileOutputStream.write('\n');
+                fileOutputStream.write(s.getBytes());
+                counter++;
+                if (show_log)
+                    System.out.println(Thread.currentThread().getName() + " " + counter + "/" + keys.size() + "  " + s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        fileOutputStream.close();
+        System.out.println(new Date() + " [Done] size=" + counter + " \t" + path);
+    }
+
 
     //    把string写入到指定文件
     public static boolean Write(String path, StringBuffer content, boolean auto_delete) throws Exception {
@@ -210,7 +241,10 @@ public class Utils {
 
     // 调用OpenCC完成文件简繁转换
     public static void OpenCC(String inputPath, String outputPath, String openccPath, String openccConfig) {
-        String command = (openccPath + File.separator + "opencc -i " + inputPath + " -o " + outputPath + " -c " + openccPath + File.separator + openccConfig);
+        String configPath = openccConfig;
+        if(!new File(openccConfig).exists())
+            configPath =  openccPath + File.separator + openccConfig;
+        String command = (openccPath + File.separator + "opencc -i " + inputPath + " -o " + outputPath + " -c " +configPath);
 
         System.out.println(new Date() + " exec OpenCC, Command = " + command);
 

@@ -53,7 +53,7 @@ public class Clean {
             config_file = args[index + 1];
         }
         Config config = Utils.ReadConfig(config_file);
-        config.setDefault_path("A:\\ProjectPython\\zhwiki-20240401-all-titles-in-ns0");
+        config.setDefault_path("A:\\ProjectPython\\zhwiki-20240501-all-titles-in-ns0");
         config.Parse(args);
 
         if (!config.verifyInputPath()) {
@@ -61,6 +61,10 @@ public class Clean {
         }
 
 
+        if(config.getPreprocessed_path()!=null){
+            OutputWords( config );
+            return;
+        }
         Dict dict = new Dict();
         for (String p : config.getInput_files()) {
             System.out.println("Load file: " + p);
@@ -68,6 +72,44 @@ public class Clean {
         }
 
         OutputWords(dict, config);
+    }
+
+
+    // 跳过预处理直接走pencc做简繁翻译、过滤废词、导出词条(导出前排序)
+    public static void OutputWords( Config config) {
+        try {
+            Set<String>  chs;
+            String path_w = config.getPath_w();
+            boolean auto_delete = config.isAuto_delete();
+            String preProcessed_path = config.getPreprocessed_path();
+            File f = new File(preProcessed_path);
+
+            if (config.verifyOpencc() && !f.getName().contains(".chs.")) {
+                String opencc_path = config.getOpencc_path();
+                String opencc_config = config.getOpencc_config();
+
+                OpenCC(preProcessed_path, path_w + ".chs.dict.txt", opencc_path, opencc_config);
+                chs = Utils.ReadWords(path_w + ".chs.dict.txt");
+
+            }else{
+                chs = Utils.ReadWords(preProcessed_path);
+            }
+
+            if (config.verifyBlacklist()) {
+                chs.removeAll(ReadBlackWords(config.getBlacklist()));
+                WriteGrayWords(chs, path_w, config.getBlacklist_fix(), config.getBlacklist_regex());
+            }
+            // 将HashSet转换为List 对List进行排序
+            List<String> list = new ArrayList<>(chs);
+            Collections.sort(list);
+
+            WriteList(list, path_w + ".dict.txt", auto_delete, false);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Finish");
     }
 
     public static void OutputWords(Dict dict, Config config) {

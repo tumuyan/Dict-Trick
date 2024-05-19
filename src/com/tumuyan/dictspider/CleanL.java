@@ -57,7 +57,7 @@ public class CleanL {
             config_file = args[index + 1];
         }
         Config config = Utils.ReadConfig(config_file);
-        config.setDefault_path("A:\\ProjectPython\\zhwiki-20240401-all-titles-in-ns0");
+        config.setDefault_path("A:\\ProjectPython\\zhwiki-20240501-all-titles-in-ns0");
         config.Parse(args);
 
         if (!config.verifyInputPath()) {
