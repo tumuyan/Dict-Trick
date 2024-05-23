@@ -1,18 +1,7 @@
 package com.tumuyan.dictspider;
 
 
-import java.io.CharArrayWriter;
-
-import java.io.UnsupportedEncodingException;
-
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-
-import java.nio.charset.IllegalCharsetNameException;
-
-import java.nio.charset.UnsupportedCharsetException;
-
-import java.security.AccessController;
 
 import java.util.*;
 

@@ -50,8 +50,7 @@ public class Dict {
                     .replaceFirst("(?<=[座])[\u0370-\u03FFa-zA-Z].*$", "")
                     .replaceFirst("^([①-⒛Ⅰ-ⅻIVX&-]{2,8})?[-・·&%'\\s∀-⋿⌀-⸩]+", "")
                     .replaceFirst("[-・·&'─\\s]+$", "")
-                    .replaceFirst("^(漫画|电影|剧场|新剧场|.国)版(?!权)","");
-
+                    .replaceFirst("^(漫画|电影|剧场|新剧场|.国)版(?!权)", "");
 
 
 //                wiki词库不保留单字。
@@ -200,15 +199,16 @@ public class Dict {
 
         suffix = new HashSet<>();
 
+        // 中文词条
         Set<String> set = new HashSet<>(chs);
 
-        if (chn.size() > 0) {
+        if (!chn.isEmpty()) {
 
             Set<String> pre = new HashSet<>();
             Set<String> str = new HashSet<>();
             Set<String> suf = new HashSet<>();
 
-            HashMap<String, ArrayList<String>> map = new HashMap<>();
+            // 对末尾的非中文内容进行计数
             Map<String, Integer> counter = new HashMap<>();
             for (String s : chn) {
 
@@ -239,36 +239,8 @@ public class Dict {
 
                 pre.add(s11);
 
-//                String s2 = s.replace(s1, "");
-//                if (s2.replaceFirst("\\d", "").length() > 1)
-//                    suffix.add(s2);
 
-
-
-/*
-                ArrayList<String> v;
-
-                if (map.containsKey(s1)) {
-                    v = map.get(s1);
-                } else {
-                    v = new ArrayList<>();
-                }
-
-                v.add(s);
-                map.put(s1, v);*/
             }
-
-/*            for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
-                String s = entry.getKey();
-                ArrayList<String> v = entry.getValue();
-                if (v.size() < 3) {
-                    for (String s1 : v) {
-                        set.add(s1);
-                    }
-                } else {
-                    set.add(s);
-                }
-            }*/
 
             for (Map.Entry<String, Integer> entry : counter.entrySet()) {
                 String s = entry.getKey();
@@ -278,6 +250,7 @@ public class Dict {
                     suf.add(s);
                 }
             }
+
 
 //            这里有bug，应该。没有输出log
             for (String s : str) {
@@ -354,7 +327,7 @@ public class Dict {
 
         return new String(c).replaceAll("([\u4e00-\u9fff])([a-zA-Z-]+[_\\s])", "$1_$2")
                 .replaceAll("([_\\s][a-zA-Z-]+)([\u4e00-\u9fff])", "$1_$2")
-                .replace("\u200B","");
+                .replace("\u200B", "");
     }
 }
 

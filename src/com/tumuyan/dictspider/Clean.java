@@ -38,10 +38,6 @@ use_preset_vocabulary: false
 public class Clean {
 
     public static void main(String[] args) {
-//        System.out.println("args.length=" + args.length + ", class=" + Clean.class.getSimpleName());
-//        for (String s : args) {
-//            System.out.println("  args:" + s);
-//        }
 
         String config_file = null;
         List<String> arg_list = Arrays.asList(args);
@@ -75,7 +71,7 @@ public class Clean {
     }
 
 
-    // 跳过预处理直接走pencc做简繁翻译、过滤废词、导出词条(导出前排序)
+    // 跳过预处理直接走opencc做简繁翻译、过滤废词、导出词条(导出前排序)
     public static void OutputWords( Config config) {
         try {
             Set<String>  chs;
@@ -164,7 +160,7 @@ public class Clean {
     }
 
     //    部分词条不在废词列表内，但是也不在修复列表中。这些词条大概率后续会列入废词列表中
-    public static void WriteGrayWords(Set<String> chs, String path_w, List<String> black_fix, List<String> black_regix) throws Exception {
+    public static void WriteGrayWords(Set<String> chs, String path_w, List<String> black_fix, List<String> black_regex) throws Exception {
         System.out.println(new Date() + " WriteGrayWords...");
         Set<String> grayWords = new HashSet<>();
         Set<String> words = new HashSet<>();
@@ -172,7 +168,7 @@ public class Clean {
             words.addAll(Utils.ReadWords(rule));
         }
 
-        for (String rule : black_regix) {
+        for (String rule : black_regex) {
             for (String str : chs) {
                 if (str.matches(rule)) {
                     if (!words.contains(str))

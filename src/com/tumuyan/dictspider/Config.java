@@ -157,8 +157,6 @@ public class Config {
                         File file = new File(path_w).getParentFile();
 
                         if (file == null) {
-//                        File f = new File(new File(System.getProperty("user.dir")),path_w);
-//                        File f = new File(DumpMoeGirl.class.getClassLoader().getResource("").getFile());
                             File f = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
                             f = new File(f.getParentFile(), path_w);
 
@@ -411,7 +409,6 @@ public class Config {
                 }
                 case "-pp", "-preprocessed-path" -> {
                     i++;
-//                boolean no_value = true;
                     while (args.length > i) {
                         arg = args[i];
                         if (arg.startsWith("-")) {
@@ -431,9 +428,6 @@ public class Config {
                     }
                 }
 
-//                if (no_value) {
-//                    System.out.println("[Err]preprocessed path arg not exist.");
-//                }
             }
         }
 

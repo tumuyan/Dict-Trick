@@ -35,13 +35,6 @@ use_preset_vocabulary: false
 public class DumpMoeGirl {
 
     public static void main(String[] args) {
-
-//        System.out.println("args.length=" + args.length + ", class=" + Clean.class.getSimpleName());
-//        for (String s : args) {
-//            System.out.println("  args:" + s);
-//        }
-
-
         String config_file = null;
         List<String> arg_list = Arrays.asList(args);
         int index = arg_list.indexOf("-c");

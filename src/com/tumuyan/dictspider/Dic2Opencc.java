@@ -1,17 +1,9 @@
 package com.tumuyan.dictspider;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // 把制作的单字字典，转写为opencc格式。
 // 多音字处理为  xx  读音&nbsp读音
@@ -70,20 +62,20 @@ public class Dic2Opencc {
 
         String path = "";
 
-        if (input_files.size() < 1) {
+        if (input_files.isEmpty()) {
             if (debug) {
                 path = "A:\\ProjectPython\\liangfen.pinyin.dict.yaml";
 //                path = "A:\\ProjectPython\\utf16test";
-                if(path_w.equals(""))
+                if(path_w.isEmpty())
                     path_w = path.replace(".dict.yaml", "")+".opencc.txt";
             }
-        } else if (path_w.equals("")) {
+        } else if (path_w.isEmpty()) {
             path = input_files.get(0);
-            if(path_w.equals(""))
+            if(path_w.isEmpty())
                 path_w = path.replace(".dict.yaml", "")+".opencc.txt";
         }
 
-        if (path_w.equals("")) {
+        if (path_w.isEmpty()) {
             File file = new File(path_w);
             if (file.exists()) {
                 if (auto_delete) {

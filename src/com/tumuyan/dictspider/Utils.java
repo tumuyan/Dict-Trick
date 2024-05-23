@@ -13,7 +13,7 @@ public class Utils {
     public static Config ReadConfig(String path) {
         Config config = new Config();
         config.setDefault_opencc_path("A:\\EBookTools\\OpenCC\\bin");
-        config.setDefault_opencc_config("C:\\prg\\WikiFilter\\scripts\\t2s.json");
+        config.setDefault_opencc_config("C:\\prg\\WikiFilter\\scripts\\a2s.json");
 
         config.setDefault_blacklist((
                 "A:\\ProjectOthers\\rime-pinyin-simp\\others\\废词-混合词条.txt;" +
@@ -39,7 +39,8 @@ public class Utils {
                         ".{2,}[表]$",
                         "[^新][娘]$",
                         "^[^a-zA-Z][a-zA-Z]+$",
-                        ".+的反应$"
+                        ".+的反应$",
+                        ".*[-]{2,}.*"
                 }
         );
 
