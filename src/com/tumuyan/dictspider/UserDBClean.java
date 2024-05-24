@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static com.tumuyan.dictspider.Utils.WriteList;
-
 public class UserDBClean {
     /*
     用户词库同步后的整理工具
@@ -76,7 +74,7 @@ public class UserDBClean {
         inputDB.addBlacklistRegex(config.getBlacklist_regex());
 
         List<String> inputfiles = config.getInput_files();
-        if (inputfiles.size() > 0) {
+        if (!inputfiles.isEmpty()) {
             String inputpath = inputfiles.get(0);
             System.out.println("Load file: " + inputpath);
             try {

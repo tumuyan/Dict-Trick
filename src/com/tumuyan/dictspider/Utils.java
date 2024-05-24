@@ -56,7 +56,7 @@ public class Utils {
             while ((line = bufferedReader.readLine()) != null) {
 //              如果匹配到空行
                 line = line.trim();
-                if (line.length() < 1 || line.startsWith("#"))
+                if (line.isEmpty() || line.startsWith("#"))
                     continue;
                 buffer.append(line);
                 buffer.append('\n');
@@ -106,7 +106,7 @@ public class Utils {
     public static void WriteList(Set<String> keys, String path, boolean auto_delete, boolean show_log) throws Exception {
         File file = new File(path);
 
-        if (keys.size() > 0) {
+        if (!keys.isEmpty()) {
             if (file.exists()) {
                 if (auto_delete) {
                     file.delete();
@@ -137,7 +137,7 @@ public class Utils {
     public static void WriteList(List<String> keys, String path, boolean auto_delete, boolean show_log) throws Exception {
         File file = new File(path);
 
-        if (keys.size() > 0) {
+        if (!keys.isEmpty()) {
             if (file.exists()) {
                 if (auto_delete) {
                     file.delete();
@@ -166,7 +166,7 @@ public class Utils {
 
 
     //    把string写入到指定文件
-    public static boolean Write(String path, StringBuffer content, boolean auto_delete) throws Exception {
+    public static void Write(String path, StringBuffer content, boolean auto_delete) throws Exception {
 
         File file = new File(path);
         if (file.exists() && auto_delete) {
@@ -178,7 +178,6 @@ public class Utils {
         fileOutputStream.write('\n');
         fileOutputStream.write(content.toString().getBytes());
         fileOutputStream.close();
-        return true;
     }
 
     public static void Write2(String path, String str, boolean append_file) {
@@ -225,7 +224,7 @@ public class Utils {
 
     }
 
-    public static boolean WriteFile(String path, StringBuffer content) throws Exception {
+    public static void WriteFile(String path, StringBuffer content) throws Exception {
 
         File file = new File(path);
 
@@ -233,7 +232,6 @@ public class Utils {
         fileOutputStream.write('\n');
         fileOutputStream.write(content.toString().getBytes());
         fileOutputStream.close();
-        return true;
     }
 
     public static synchronized void write(FileOutputStream fileOutputStream, String content) throws Exception {

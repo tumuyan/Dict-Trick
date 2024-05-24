@@ -18,7 +18,7 @@ import static com.tumuyan.dictspider.Utils.WriteFile;
 // 用于读取两分词库每一行的第一个字，并从在线字典获取拼音，转写为大字集拼音。
 // 已经为多音字添加&，需要用正则转换 \t([^\s]+\&[^\s]+) 替换为 \t\[$1\]
 public class Main {
-    private static boolean debug = true;
+    private static final boolean debug = true;
 
     public static void main(String[] args) {
 
@@ -39,7 +39,6 @@ public class Main {
 
                     path_w = args[i].trim().replaceFirst("[/\\\\]$", "");
                     File file = new File(path_w).getParentFile();
-//                    File file=new File(path_w.replaceFirst("[^/\\\\]+$",""));
                     if (file.exists()) {
                         System.out.println("Output to: " + args[i]);
                     } else {
@@ -138,22 +137,9 @@ public class Main {
                 if (line.isEmpty())
                     continue;
 
-//                if (!only_read){
-//                    if(!line.contains("\t"))
-//                        continue;
-//                }
-
-//              如果匹配到拼音
-//            if (line.matches("^.+\t[A-ʯ]+")) {
-//                buffer.append('\n');
-//                buffer.append(line);
-//                continue;
-//            }
 //                依据叶典列出的unicode范围 (http://yedict.com/zsts.htm)
 //                大致判断字符归属汉字、部首及扩展A-E （抛弃扩展F/G）
-
                 char c = line.charAt(0);
-
                 String s = String.valueOf(c);
                 if (c >= '\ud800' && c <= '\udbff') {
                     s = line.substring(0, 2);
@@ -229,13 +215,13 @@ public class Main {
             Document doc = Jsoup.connect("https://www.zdic.net/hans/" + s).get();
             Elements py = doc.select("td.z_py span.song");
 
-            String str = "";
+            StringBuilder str = new StringBuilder();
 
             for (Element e : py) {
-                str = str + string + e.text().trim();
+                str.append(string).append(e.text().trim());
             }
 
-            return str;
+            return str.toString();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -277,7 +263,7 @@ public class Main {
 
             Elements py = doc.select("table.zui  tbody tr td table tbody tr td");
 
-            String str = "";
+            StringBuilder str = new StringBuilder();
             String blk = "";
 
             for (Element e : py) {
@@ -285,16 +271,16 @@ public class Main {
                     blk = e.text().replace("拼音：","");
                     break;
                 }
-                str = str + string + e.text().trim();
+                str.append(string).append(e.text().trim());
             }
 
             String[] p = blk.split("[,，]");
 
             for(String ps:p){
-                str = str + string + ps.trim();
+                str.append(string).append(ps.trim());
             }
 
-            return str;
+            return str.toString();
 
         } catch (Exception e) {
             System.out.print("Error: s="+s);

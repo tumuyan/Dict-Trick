@@ -57,7 +57,7 @@ public class Dict {
             if (s.length() < 2)
                 continue;
 
-//               屏蔽其中一字为数字/英语、特殊符号的双字词
+//               屏蔽其中单字为数字/英语、特殊符号的双字词
             if (s.matches("(.[0-z⌀-⸩]|[0-z⌀-⸩].)"))
                 continue;
 
@@ -309,7 +309,6 @@ public class Dict {
             } else if (c[i] == 12288) {
                 //全角空格为12288，半角空格为32
                 c[i] = (char) 32;
-                continue;
             } else if (c[i] >= 0x2010 && c[i] <= 0x2015 || c[i] == '─') {
                 // 多个编码的'-'进行统一转换
                 c[i] = '-';

@@ -5,7 +5,7 @@
 #参数请尽量不要包含空格和非英文
 #-debug
 	#debug用参数，使用此开关可以不填部分参数，使用默认路径
--pageLimit
+-page-limit
 	#debug使用，限制爬虫任务爬的页面数量
 	3
 -input
@@ -22,7 +22,7 @@
 -blacklist-fix
 	#修复过杀废词
 -blacklist-regex
-	#废词正则表达式，允许多个。当词条不在废词列表中，但是与此正则表达式匹配时，输出到graylist文件中
+	#废词正则表达式，允许多个。当词条不在废词列表中，但是与此正则表达式匹配时，输出到 graylist 文件中
 -less-output
 	#不保留转换过程产生的大部分中间文件。
 -count-group

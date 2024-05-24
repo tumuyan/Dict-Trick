@@ -128,7 +128,7 @@ public class Config {
             "l", "h", "a", "d", "o", "p", "i", "cc", "ccc", "b", "bf", "bs"
     };
     public static List<String> full_name = Arrays.asList(
-            "less-output", "help", "a", "debug", "output", "pagelimit", "input", "opencc", "opencc-config", "blacklist", "blacklist-fix", "blackstring"
+            "less-output", "help", "a", "debug", "output", "page-limit", "input", "opencc", "opencc-config", "blacklist", "blacklist-fix", "black-string"
     );
 
 
@@ -175,7 +175,7 @@ public class Config {
                         System.out.println("[Err]Output arg not exist.");
                     }
                 }
-                case "-p", "-pagelimit" -> {
+                case "-p", "-page-limit" -> {
                     i++;
                     if (args.length > i) {
                         arg = args[i];
@@ -435,8 +435,8 @@ public class Config {
 
     //   验证是否设置了输出路径,如果执行爬虫任务，缺少此参数自动退出
     public boolean verifyOutputPath() {
-        if (path_w.length() < 1) {
-            if (debug && default_path_w.length() > 0)
+        if (path_w.isEmpty()) {
+            if (debug && !default_path_w.isEmpty())
                 path_w = default_path_w;
             else {
                 System.out.println("[Err]Output path missing.");
@@ -451,7 +451,7 @@ public class Config {
     public boolean verifyInputPath() {
         String path;
 
-        if (input_files.size() < 1) {
+        if (input_files.isEmpty()) {
             if (debug && default_path.length() > 1) {
                 path = default_path;
                 input_files = new ArrayList<>();
@@ -463,7 +463,7 @@ public class Config {
         } else {
             path = input_files.get(0);
         }
-        if (path_w.length() < 1) {
+        if (path_w.isEmpty()) {
             path_w = path.replace(".txt", "");
         }
         return true;
@@ -472,7 +472,7 @@ public class Config {
 
     //如果没有opencc参数，可以不做Opencc转换，无需退出
     public boolean verifyOpencc() {
-        if (opencc_path.length() < 1) {
+        if (opencc_path.isEmpty()) {
             if (debug && default_opencc_path.length() > 1) {
                 opencc_path = default_opencc_path;
             } else {
@@ -481,7 +481,7 @@ public class Config {
             }
         }
 
-        if (opencc_config.length() < 1) {
+        if (opencc_config.isEmpty()) {
             if (debug && default_opencc_config.length() > 1) {
                 opencc_config = default_opencc_config;
             } else {
@@ -494,7 +494,7 @@ public class Config {
 
     //如果没有 blacklist参数，可以不做黑名单过滤，无需退出
     public boolean verifyBlacklist() {
-        if (whitelist.size() < 1) {
+        if (whitelist.isEmpty()) {
             if (debug && default_whitelist != null) {
                 whitelist = Arrays.asList(default_whitelist);
             } else {
@@ -503,7 +503,7 @@ public class Config {
             }
         }
 
-        if (blacklist.size() < 1) {
+        if (blacklist.isEmpty()) {
             if (debug && default_blacklist != null) {
                 blacklist = Arrays.asList(default_blacklist);
             } else {
@@ -512,7 +512,7 @@ public class Config {
             }
         }
 
-        if (blacklist_fix.size() < 1) {
+        if (blacklist_fix.isEmpty()) {
             if (debug && default_blacklist_fix != null) {
                 blacklist_fix = Arrays.asList(default_blacklist_fix);
             } else {
@@ -521,7 +521,7 @@ public class Config {
             }
         }
 
-        if (blacklist_regex.size() < 1) {
+        if (blacklist_regex.isEmpty()) {
             if (debug && default_blacklist_regex != null) {
                 blacklist_regex = Arrays.asList(default_blacklist_regex);
             } else {

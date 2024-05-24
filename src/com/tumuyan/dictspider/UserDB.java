@@ -123,7 +123,7 @@ public class UserDB {
         int index;
         if (o.count != 0) {
 
-            if (blackList.size() > 0) {
+            if (!blackList.isEmpty()) {
                 if (blackList.contains(o.word + '\t' + o.code)) {
                     return;
                 }
@@ -213,33 +213,33 @@ public class UserDB {
         Write(path_w + ".auto_output.txt", a, true);
         Write(path_w + ".auto_output.txt", e, true);
 
-        if (c1.size() > 0) Write(path_w + ".auto_output.txt", c1, true);
-        if (c2.size() > 0) Write(path_w + ".auto_output.txt", c2, true);
-        if (c3.size() > 0) Write(path_w + ".auto_output.txt", c3, true);
-        if (c4.size() > 0) Write(path_w + ".auto_output.txt", c4, true);
-        if (c5.size() > 0) Write(path_w + ".auto_output.txt", c5, true);
-        if (c6.size() > 0) Write(path_w + ".auto_output.txt", c6, true);
-        if (c7.size() > 0) Write(path_w + ".auto_output.txt", c7, true);
-        if (c8.size() > 0) Write(path_w + ".auto_output.txt", c8, true);
-        if (c9.size() > 0) Write(path_w + ".auto_output.txt", c9, true);
-        if (c10.size() > 0) Write(path_w + ".auto_output.txt", c10, true);
+        if (!c1.isEmpty()) Write(path_w + ".auto_output.txt", c1, true);
+        if (!c2.isEmpty()) Write(path_w + ".auto_output.txt", c2, true);
+        if (!c3.isEmpty()) Write(path_w + ".auto_output.txt", c3, true);
+        if (!c4.isEmpty()) Write(path_w + ".auto_output.txt", c4, true);
+        if (!c5.isEmpty()) Write(path_w + ".auto_output.txt", c5, true);
+        if (!c6.isEmpty()) Write(path_w + ".auto_output.txt", c6, true);
+        if (!c7.isEmpty()) Write(path_w + ".auto_output.txt", c7, true);
+        if (!c8.isEmpty()) Write(path_w + ".auto_output.txt", c8, true);
+        if (!c9.isEmpty()) Write(path_w + ".auto_output.txt", c9, true);
+        if (!c10.isEmpty()) Write(path_w + ".auto_output.txt", c10, true);
 
 
-        if (a.size() > 0) Write(path_w + ".match_dict.txt", a, false);
-        if (b.size() > 0) Write(path_w + ".different_code.txt", b, false);
-        if (d.size() > 0) Write(path_w + ".match_regex.txt", d, false);
-        if (e.size() > 0) Write(path_w + ".match_whitelist.txt", e, false);
-        if (c0.size() > 0) Write(path_w + ".c0." + "-" + countGroup.get(0) + ".txt", c0, false);
-        if (c1.size() > 0) Write(path_w + ".c1." + countGroup.get(0) + "-" + countGroup.get(1) + ".txt", c1, false);
-        if (c2.size() > 0) Write(path_w + ".c2." + countGroup.get(1) + "-" + countGroup.get(2) + ".txt", c2, false);
-        if (c3.size() > 0) Write(path_w + ".c3." + countGroup.get(2) + "-" + countGroup.get(3) + ".txt", c3, false);
-        if (c4.size() > 0) Write(path_w + ".c4." + countGroup.get(3) + "-" + countGroup.get(4) + ".txt", c4, false);
-        if (c5.size() > 0) Write(path_w + ".c5." + countGroup.get(4) + "-" + countGroup.get(5) + ".txt", c5, false);
-        if (c6.size() > 0) Write(path_w + ".c6." + countGroup.get(5) + "-" + countGroup.get(6) + ".txt", c6, false);
-        if (c7.size() > 0) Write(path_w + ".c7." + countGroup.get(6) + "-" + countGroup.get(7) + ".txt", c7, false);
-        if (c8.size() > 0) Write(path_w + ".c8." + countGroup.get(7) + "-" + countGroup.get(8) + ".txt", c8, false);
-        if (c9.size() > 0) Write(path_w + ".c9." + countGroup.get(8) + "-" + countGroup.get(9) + ".txt", c9, false);
-        if (c10.size() > 0) Write(path_w + ".c10." + countGroup.get(9) + "-" + countGroup.get(10) + ".txt", c10, false);
+        if (!a.isEmpty()) Write(path_w + ".match_dict.txt", a, false);
+        if (!b.isEmpty()) Write(path_w + ".different_code.txt", b, false);
+        if (!d.isEmpty()) Write(path_w + ".match_regex.txt", d, false);
+        if (!e.isEmpty()) Write(path_w + ".match_whitelist.txt", e, false);
+        if (!c0.isEmpty()) Write(path_w + ".c0." + "-" + countGroup.get(0) + ".txt", c0, false);
+        if (!c1.isEmpty()) Write(path_w + ".c1." + countGroup.get(0) + "-" + countGroup.get(1) + ".txt", c1, false);
+        if (!c2.isEmpty()) Write(path_w + ".c2." + countGroup.get(1) + "-" + countGroup.get(2) + ".txt", c2, false);
+        if (!c3.isEmpty()) Write(path_w + ".c3." + countGroup.get(2) + "-" + countGroup.get(3) + ".txt", c3, false);
+        if (!c4.isEmpty()) Write(path_w + ".c4." + countGroup.get(3) + "-" + countGroup.get(4) + ".txt", c4, false);
+        if (!c5.isEmpty()) Write(path_w + ".c5." + countGroup.get(4) + "-" + countGroup.get(5) + ".txt", c5, false);
+        if (!c6.isEmpty()) Write(path_w + ".c6." + countGroup.get(5) + "-" + countGroup.get(6) + ".txt", c6, false);
+        if (!c7.isEmpty()) Write(path_w + ".c7." + countGroup.get(6) + "-" + countGroup.get(7) + ".txt", c7, false);
+        if (!c8.isEmpty()) Write(path_w + ".c8." + countGroup.get(7) + "-" + countGroup.get(8) + ".txt", c8, false);
+        if (!c9.isEmpty()) Write(path_w + ".c9." + countGroup.get(8) + "-" + countGroup.get(9) + ".txt", c9, false);
+        if (!c10.isEmpty()) Write(path_w + ".c10." + countGroup.get(9) + "-" + countGroup.get(10) + ".txt", c10, false);
 //        if (0.size() > 0) Write(path_w + "c" + countGroup.get(10) + "-.txt", c10, false);
 
 
