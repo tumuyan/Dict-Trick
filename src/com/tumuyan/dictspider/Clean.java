@@ -131,8 +131,8 @@ public class Clean {
 
             if (config.verifyBlacklist()) {
                 chs.removeAll(ReadBlackWords(config.getBlacklist()));
-                WriteGrayWords(chs, path_w, config.getBlacklist_fix(), config.getBlacklist_regex());
             }
+            WriteGrayWords(chs, path_w, config.getBlacklist_fix(), config.getBlacklist_regex());
 
             WriteList(chs, path_w + ".dict.txt", auto_delete, false);
             if (!config.isLess_output()) {
