@@ -28,6 +28,10 @@ public class Utils {
                 "A:\\ProjectOthers\\rime-pinyin-simp\\others\\修复-混合词条.txt",
         });
 
+        config.setDefault_whitelist(new String[]{
+                "A:\\ProjectOthers\\rime-pinyin-simp\\others\\whitelist.txt",
+        });
+
         config.setDefault_blacklist_regex(
                 new String[]{
                         ".*新干线.+",

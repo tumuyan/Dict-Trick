@@ -11,6 +11,10 @@ public class Dict {
         mix = new HashSet<>();
         chn = new HashSet<>();
         suffix = new HashSet<>();
+        // 匹配到白名单的词条
+        passby = new HashSet<>();
+        // 配置中的白名单
+        whitelist = new HashSet<>();
     }
 
 //    public Dict(Dict dict) {
@@ -20,18 +24,36 @@ public class Dict {
 //        chn = dict.chn;
 //    }
 
+
     public void add(Dict dict) {
         eng.addAll(dict.eng);
         chs.addAll(dict.chs);
         mix.addAll(dict.mix);
         chn.addAll(dict.chn);
+        passby.addAll(dict.passby);
+    }
+
+    public  void addWhiteList(Set<String> words){
+        this.whitelist.addAll(words);
+    }
+
+    public  void addPassBy(String str){
+        passby.add(str);
     }
 
     public void add(String str) {
-
+        if(whitelist.contains(str)){
+            passby.add(str);
+            return;
+        }
 //            不可切分的字符有：[-・·&%']
 //            必须切分的字符有： ~ _(空格) 括号
         str = regular(str);
+
+        if(whitelist.contains(str)){
+            passby.add(str);
+            return;
+        }
 
         String[] strs;
         if (str.matches(".*([\u4e00-\u9fff])[·・ᐧ･]([\u4e00-\u9fff]).*")) {
@@ -56,6 +78,12 @@ public class Dict {
 //                wiki词库不保留单字。
             if (s.length() < 2)
                 continue;
+
+//          白名单匹配
+            if(whitelist.contains(str)){
+                passby.add(str);
+                continue;
+            }
 
 //               屏蔽其中单字为数字/英语、特殊符号的双字词
             if (s.matches("(.[0-z⌀-⸩]|[0-z⌀-⸩].)"))
@@ -192,7 +220,7 @@ public class Dict {
         }
     }
 
-    private Set<String> eng, chs, mix, chn, suffix;
+    private Set<String> eng, chs, mix, chn, suffix, passby, whitelist;
 
 
     public Set<String> getChs() {
@@ -297,6 +325,11 @@ public class Dict {
     public Set<String> getMix() {
         return mix;
     }
+
+    public Set<String> getPassby() {
+        return passby;
+    }
+
 
     public String regular(String input) {
         char[] c = input.trim().toCharArray();

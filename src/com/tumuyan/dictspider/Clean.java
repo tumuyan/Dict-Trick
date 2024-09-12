@@ -61,10 +61,19 @@ public class Clean {
             OutputWords( config );
             return;
         }
+
+        Set<String> whitelist = new HashSet<>();
+        if (config.verifyBlacklist()) {
+            whitelist.addAll(DirectReadWords(config.getWhitelist()));
+        }
+
+
+
+
         Dict dict = new Dict();
         for (String p : config.getInput_files()) {
             System.out.println("Load file: " + p);
-            dict.add(ReadFile(p));
+            dict.add(ReadFile(p,whitelist));
         }
 
         OutputWords(dict, config);
@@ -92,7 +101,7 @@ public class Clean {
             }
 
             if (config.verifyBlacklist()) {
-                chs.removeAll(ReadBlackWords(config.getBlacklist()));
+                chs.removeAll(DirectReadWords(config.getBlacklist()));
                 WriteGrayWords(chs, path_w, config.getBlacklist_fix(), config.getBlacklist_regex());
             }
             // 将HashSet转换为List 对List进行排序
@@ -113,7 +122,7 @@ public class Clean {
             Set<String> chs = dict.getChs();
             String path_w = config.getPath_w();
             boolean auto_delete = config.isAuto_delete();
-
+            
 
             if (config.verifyOpencc()) {
                 String opencc_path = config.getOpencc_path();
@@ -130,8 +139,10 @@ public class Clean {
             }
 
             if (config.verifyBlacklist()) {
-                chs.removeAll(ReadBlackWords(config.getBlacklist()));
+                chs.removeAll(DirectReadWords(config.getBlacklist()));
             }
+            chs.addAll(dict.getPassby());
+
             WriteGrayWords(chs, path_w, config.getBlacklist_fix(), config.getBlacklist_regex());
 
             WriteList(chs, path_w + ".dict.txt", auto_delete, false);
@@ -139,6 +150,7 @@ public class Clean {
                 WriteList(dict.getEng(), path_w + ".eng.dict.txt", auto_delete, false);
                 WriteList(dict.getMix(), path_w + ".mix.dict.txt", auto_delete, false);
                 WriteList(dict.getSuffix(), path_w + ".chs.suffix.txt", auto_delete, false);
+                WriteList(dict.getPassby(), path_w + ".passby.txt", auto_delete, false);
             }
 
         } catch (Exception e) {
@@ -148,12 +160,12 @@ public class Clean {
         System.out.println("Finish");
     }
 
-    //   废词列表
-    public static Set<String> ReadBlackWords(List<String> list) {
+    //   直接读取词条，用于废词列表、白名单
+    public static Set<String> DirectReadWords(List<String> filelist) {
 
         Set<String> words = new HashSet<>();
 
-        for (String str : list) {
+        for (String str : filelist) {
             words.addAll(Utils.ReadWords(str));
         }
         return words;
@@ -201,8 +213,9 @@ public class Clean {
 
     // path_w为空时，读取path每一行文本,如果包含tab，把第一个字到keys中；并返回key
 //    path_w不为空时，把带拼音的写入path_w并返回key
-    public static Dict ReadFile(String path) {
+    public static Dict ReadFile(String path, Set<String> whitelist) {
         Dict dict = new Dict();
+        dict.addWhiteList(whitelist);
 
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
@@ -212,7 +225,6 @@ public class Clean {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
-
 //              如果匹配到空行
                 if (line.length() < 2)
                     continue;
