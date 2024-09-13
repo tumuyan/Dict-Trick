@@ -22,6 +22,7 @@ public class Config {
     private List<String> refer_files = new ArrayList<>(); // 参考文件的列表
     private String opencc_path = "";  // opencc可执行文件所在的路径（不含文件名）
     private String opencc_config = ""; // opencc的配置文件所在的路径，是opencc_path的相对路径
+    private boolean opencc_skip = false; // 跳过opencc转换
 
     private List<String> whitelist = new ArrayList<>();
     private List<String> blacklist = new ArrayList<>(); // 废词
@@ -82,6 +83,10 @@ public class Config {
 
     public String getOpencc_config() {
         return opencc_config;
+    }
+
+    public boolean isOpencc_skip() {
+        return opencc_skip;
     }
 
     public void setDefault_path(String default_path) {
@@ -332,6 +337,8 @@ public class Config {
                         System.out.println("[Err]opencc config arg not exist.");
                     }
                 }
+
+                case "-cs", "-opencc-skip" -> opencc_skip = true;
                 case "-b", "-blacklist" -> {
                     i++;
                     boolean no_value = true;
@@ -472,6 +479,8 @@ public class Config {
 
     //如果没有opencc参数，可以不做Opencc转换，无需退出
     public boolean verifyOpencc() {
+        if(opencc_skip)
+            return false;
         if (opencc_path.isEmpty()) {
             if (debug && default_opencc_path.length() > 1) {
                 opencc_path = default_opencc_path;

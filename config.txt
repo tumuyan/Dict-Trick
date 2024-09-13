@@ -17,6 +17,8 @@
 	#opencc可执行文件所在的路径（不含文件名）如果不设置opencc路径，则不使用简繁翻译
 -opencc-config
 	#opencc的配置文件所在的路径，是opencc_path的相对路径
+-opencc-skip
+    #跳过opencc处理
 -blacklist
 	#废词列表文件，允许多个.当缺少废词时，不做废词过滤
 -blacklist-fix
