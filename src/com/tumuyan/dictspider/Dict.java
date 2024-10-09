@@ -55,6 +55,9 @@ public class Dict {
             return;
         }
 
+        if(str.matches("^(三国杀)(:|：).+&.+"))
+            return;
+
         String[] strs;
         if (str.matches(".*([\u4e00-\u9fff])[·・ᐧ･]([\u4e00-\u9fff]).*")) {
             strs = str.replaceAll("[·・ᐧ･]", "·")
