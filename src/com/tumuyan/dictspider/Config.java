@@ -459,7 +459,10 @@ public class Config {
         String path;
 
         if (input_files.isEmpty()) {
-            if (debug && default_path.length() > 1) {
+            if (preprocessed_path.length() > 1) {
+                path = preprocessed_path;
+                input_files = new ArrayList<>();
+            } else if (debug && default_path.length() > 1) {
                 path = default_path;
                 input_files = new ArrayList<>();
                 input_files.add(path);
